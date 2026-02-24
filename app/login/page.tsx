@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Shield, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
@@ -10,6 +10,8 @@ import { OfflineBanner } from '@/components/ui/OfflineBanner'
 export default function LoginPage() {
   const { login } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const redirectTo = searchParams.get('redirect') ?? '/dashboard'
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -27,7 +29,7 @@ export default function LoginPage() {
     setLoading(true)
     try {
       await login(email, password)
-      router.push('/dashboard')
+      router.push(redirectTo)
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||

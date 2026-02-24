@@ -40,7 +40,7 @@ const quickServices = [
     icon: Shield,
     title: 'National ID',
     description: 'Apply or replace your National Identity Card',
-    href: '/register',
+    href: '/tickets/new',
     color: 'text-blue-600 dark:text-blue-400',
     bg: 'bg-blue-50 dark:bg-blue-900/20',
   },
@@ -48,7 +48,7 @@ const quickServices = [
     icon: Globe,
     title: 'Passport',
     description: 'New passport or renewal applications',
-    href: '/register',
+    href: '/tickets/new',
     color: 'text-purple-600 dark:text-purple-400',
     bg: 'bg-purple-50 dark:bg-purple-900/20',
   },
@@ -56,7 +56,7 @@ const quickServices = [
     icon: Car,
     title: 'Driving Licence',
     description: 'Apply, renew or replace your driving licence',
-    href: '/register',
+    href: '/tickets/new',
     color: 'text-amber-600 dark:text-amber-400',
     bg: 'bg-amber-50 dark:bg-amber-900/20',
   },
@@ -64,7 +64,7 @@ const quickServices = [
     icon: Briefcase,
     title: 'Business Registration',
     description: 'Register companies, partnerships and sole traders',
-    href: '/register',
+    href: '/tickets/new',
     color: 'text-green-600 dark:text-green-400',
     bg: 'bg-green-50 dark:bg-green-900/20',
   },
@@ -72,7 +72,7 @@ const quickServices = [
     icon: Calculator,
     title: 'KRA PIN',
     description: 'Apply for or retrieve your KRA tax PIN',
-    href: '/register',
+    href: '/tickets/new',
     color: 'text-red-600 dark:text-red-400',
     bg: 'bg-red-50 dark:bg-red-900/20',
   },
@@ -80,7 +80,7 @@ const quickServices = [
     icon: Heart,
     title: 'NHIF',
     description: 'Register and manage your health insurance cover',
-    href: '/register',
+    href: '/tickets/new',
     color: 'text-pink-600 dark:text-pink-400',
     bg: 'bg-pink-50 dark:bg-pink-900/20',
   },
@@ -88,7 +88,7 @@ const quickServices = [
     icon: Fingerprint,
     title: 'Police Clearance',
     description: 'Certificate of good conduct from the DCI',
-    href: '/register',
+    href: '/tickets/new',
     color: 'text-slate-600 dark:text-slate-400',
     bg: 'bg-slate-50 dark:bg-slate-900/20',
   },
@@ -96,7 +96,7 @@ const quickServices = [
     icon: Baby,
     title: 'Birth Certificate',
     description: 'Apply for birth and death certificates online',
-    href: '/register',
+    href: '/tickets/new',
     color: 'text-teal-600 dark:text-teal-400',
     bg: 'bg-teal-50 dark:bg-teal-900/20',
   },
@@ -577,7 +577,7 @@ export default function HomePage() {
             {categories.map(({ icon: Icon, title, description, color, bg, count }) => (
               <Link
                 key={title}
-                href="/register"
+                href="/tickets/new"
                 className="group bg-card border border-border rounded-2xl p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-200"
               >
                 <div className={`w-12 h-12 rounded-xl ${bg} flex items-center justify-center mb-4`}>
@@ -609,9 +609,10 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {agencies.map(({ acronym, name, description, icon: Icon }) => (
-              <div
+              <Link
                 key={acronym}
-                className="bg-card border border-border rounded-2xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                href="/tickets/new"
+                className="group bg-card border border-border rounded-2xl p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 block"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -621,18 +622,19 @@ export default function HomePage() {
                 </div>
                 <p className="text-xs font-medium text-foreground mb-1 leading-snug">{name}</p>
                 <p className="text-xs text-muted-foreground leading-relaxed">{description}</p>
-              </div>
+              </Link>
             ))}
           </div>
 
           <div className="text-center mt-10">
             <Link
-              href="/register"
+              href="/tickets/new"
               className="inline-flex items-center gap-2 rounded-xl border border-primary text-primary px-6 py-3 text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors"
             >
               <Building2 className="h-4 w-4" />
               View All 50+ Agencies
             </Link>
+
           </div>
         </div>
       </section>
@@ -697,7 +699,7 @@ export default function HomePage() {
                 ))}
               </div>
               <Link
-                href="/register"
+                href="/tickets/new"
                 className="mt-8 inline-flex items-center gap-2 rounded-xl bg-primary text-primary-foreground px-6 py-3 text-sm font-semibold hover:opacity-90 transition-opacity"
               >
                 Access County Services <ArrowRight className="h-4 w-4" />
@@ -708,12 +710,13 @@ export default function HomePage() {
             <div className="flex-1 w-full">
               <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
                 {counties.map((county) => (
-                  <div
+                  <Link
                     key={county}
-                    className="rounded-lg bg-muted/50 border border-border px-2 py-2 text-center text-[11px] text-muted-foreground hover:bg-primary/5 hover:text-primary hover:border-primary/30 transition-colors cursor-pointer leading-tight"
+                    href="/tickets/new"
+                    className="rounded-lg bg-muted/50 border border-border px-2 py-2 text-center text-[11px] text-muted-foreground hover:bg-primary/5 hover:text-primary hover:border-primary/30 transition-colors leading-tight block"
                   >
                     {county}
-                  </div>
+                  </Link>
                 ))}
               </div>
             </div>
@@ -734,7 +737,7 @@ export default function HomePage() {
               </h2>
             </div>
             <Link
-              href="/register"
+              href="/knowledge-base"
               className="inline-flex items-center gap-2 rounded-xl border border-primary text-primary px-5 py-2.5 text-sm font-semibold hover:bg-primary hover:text-primary-foreground transition-colors whitespace-nowrap"
             >
               <Bell className="h-4 w-4" />
@@ -744,9 +747,10 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {news.map(({ tag, title, date, excerpt }) => (
-              <div
+              <Link
                 key={title}
-                className="bg-card border border-border rounded-2xl p-6 hover:shadow-md transition-shadow flex flex-col"
+                href="/knowledge-base"
+                className="group bg-card border border-border rounded-2xl p-6 hover:shadow-md transition-shadow flex flex-col block"
               >
                 <div className="flex items-center justify-between mb-4">
                   <span className="inline-flex rounded-full bg-primary/10 text-primary text-xs font-medium px-3 py-1">
@@ -754,11 +758,11 @@ export default function HomePage() {
                   </span>
                   <span className="text-xs text-muted-foreground">{date}</span>
                 </div>
-                <h3 className="text-base font-semibold text-foreground mb-2 leading-snug flex-1">
+                <h3 className="text-base font-semibold text-foreground mb-2 leading-snug flex-1 group-hover:text-primary transition-colors">
                   {title}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{excerpt}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

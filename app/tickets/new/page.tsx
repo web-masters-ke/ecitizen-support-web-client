@@ -39,7 +39,7 @@ export default function NewTicketPage() {
   const [success, setSuccess] = useState<{ ticketNumber: string; ticketId: string } | null>(null)
 
   useEffect(() => {
-    if (!loading && !isAuthenticated) router.push('/login')
+    if (!loading && !isAuthenticated) router.push('/login?redirect=/tickets/new')
   }, [loading, isAuthenticated, router])
 
   useEffect(() => {
