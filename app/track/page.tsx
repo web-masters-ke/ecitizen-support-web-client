@@ -11,7 +11,7 @@ import {
 } from 'lucide-react'
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import apiClient from '@/lib/api'
-import { formatDate } from '@/lib/utils'
+import { formatDate, statusStr } from '@/lib/utils'
 
 /* ─── Types ─────────────────────────────────────────────────────────────────── */
 
@@ -80,10 +80,11 @@ const STATUS_CONFIG: Record<
   },
 }
 
-function getStatusConfig(status: string) {
+function getStatusConfig(status: unknown) {
+  const s = statusStr(status)
   return (
-    STATUS_CONFIG[status as StatusKey] ?? {
-      label: status.replace('_', ' '),
+    STATUS_CONFIG[s as StatusKey] ?? {
+      label: s.replace('_', ' '),
       badgeClass: 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400',
       icon: Clock,
       iconClass: 'text-gray-400',
@@ -264,11 +265,11 @@ export default function TrackPage() {
             {/* Status bar */}
             <div
               className={`px-6 py-3 flex items-center gap-2 ${
-                ticket.status === 'RESOLVED'
+                statusStr(ticket.status) === 'RESOLVED'
                   ? 'bg-green-50 dark:bg-green-900/20 border-b border-green-100 dark:border-green-800'
-                  : ticket.status === 'ESCALATED'
+                  : statusStr(ticket.status) === 'ESCALATED'
                   ? 'bg-red-50 dark:bg-red-900/20 border-b border-red-100 dark:border-red-800'
-                  : ticket.status === 'CLOSED'
+                  : statusStr(ticket.status) === 'CLOSED'
                   ? 'bg-gray-50 dark:bg-gray-800/40 border-b border-gray-100 dark:border-gray-700'
                   : 'bg-muted/50 border-b border-border'
               }`}

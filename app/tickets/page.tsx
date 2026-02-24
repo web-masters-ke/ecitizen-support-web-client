@@ -13,7 +13,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { CitizenLayout } from '@/components/layout/CitizenLayout'
 import { ticketsApi } from '@/lib/api'
-import { getStatusColor, getPriorityColor, formatDate } from '@/lib/utils'
+import { getStatusColor, getPriorityColor, formatDate, statusStr } from '@/lib/utils'
 
 interface Ticket {
   id: string
@@ -210,8 +210,8 @@ export default function TicketsPage() {
                         {ticket.agency?.agencyName ?? '—'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(ticket.status)}`}>
-                          {ticket.status.replace('_', ' ')}
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusStr(ticket.status))}`}>
+                          {statusStr(ticket.status).replace('_', ' ')}
                         </span>
                       </td>
                       <td className={`px-6 py-4 text-xs font-medium hidden md:table-cell whitespace-nowrap`}>

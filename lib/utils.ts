@@ -33,6 +33,13 @@ export function timeAgo(date: string | Date) {
   return `${Math.floor(hrs / 24)}d ago`
 }
 
+// Backend may return status/priority as an object {id, name, ...} instead of a plain string
+export function statusStr(status: unknown): string {
+  if (typeof status === 'string') return status
+  if (status && typeof status === 'object' && 'name' in status) return (status as { name: string }).name
+  return 'UNKNOWN'
+}
+
 export function getStatusColor(status: string): string {
   const map: Record<string, string> = {
     OPEN: 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',

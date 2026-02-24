@@ -16,7 +16,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { CitizenLayout } from '@/components/layout/CitizenLayout'
 import { ticketsApi, notificationsApi } from '@/lib/api'
-import { getStatusColor, getGreeting, formatDate } from '@/lib/utils'
+import { getStatusColor, getGreeting, formatDate, statusStr } from '@/lib/utils'
 
 interface TicketRow {
   id: string
@@ -68,8 +68,8 @@ export default function DashboardPage() {
 
   if (loading || !isAuthenticated) return null
 
-  const openTickets = tickets.filter((t) => ['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED'].includes(t.status)).length
-  const resolvedTickets = tickets.filter((t) => ['RESOLVED', 'CLOSED'].includes(t.status)).length
+  const openTickets = tickets.filter((t) => ['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED'].includes(statusStr(t.status))).length
+  const resolvedTickets = tickets.filter((t) => ['RESOLVED', 'CLOSED'].includes(statusStr(t.status))).length
 
   const stats = [
     { label: 'Total Tickets', value: tickets.length, icon: Ticket, color: 'text-blue-600 dark:text-blue-400', bg: 'bg-blue-50 dark:bg-blue-900/20' },
@@ -180,8 +180,8 @@ export default function DashboardPage() {
                         {ticket.agency?.agencyName ?? '—'}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(ticket.status)}`}>
-                          {ticket.status.replace('_', ' ')}
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusStr(ticket.status))}`}>
+                          {statusStr(ticket.status).replace('_', ' ')}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-muted-foreground hidden md:table-cell">

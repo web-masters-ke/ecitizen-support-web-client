@@ -13,7 +13,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { CitizenLayout } from '@/components/layout/CitizenLayout'
 import { ticketsApi } from '@/lib/api'
-import { getStatusColor, formatDate, formatDateTime, timeAgo, getInitials } from '@/lib/utils'
+import { getStatusColor, formatDate, formatDateTime, timeAgo, getInitials, statusStr } from '@/lib/utils'
 
 interface TicketDetail {
   id: string
@@ -160,8 +160,8 @@ export default function TicketDetailPage() {
         <div className="mb-6">
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className="font-mono text-sm font-semibold text-primary">{ticket.ticketNumber}</span>
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(ticket.status)}`}>
-              {ticket.status.replace('_', ' ')}
+            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusStr(ticket.status))}`}>
+              {statusStr(ticket.status).replace('_', ' ')}
             </span>
             <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityBadge[ticket.priority] ?? ''}`}>
               {ticket.priority}
@@ -236,7 +236,7 @@ export default function TicketDetailPage() {
               </div>
 
               {/* Reply box */}
-              {['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED'].includes(ticket.status) && (
+              {['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED'].includes(statusStr(ticket.status)) && (
                 <div className="border-t border-border p-4">
                   <div className="flex gap-2">
                     <textarea
@@ -268,8 +268,8 @@ export default function TicketDetailPage() {
             {/* Status card */}
             <div className="rounded-xl border border-border bg-card p-5">
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Status</h3>
-              <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(ticket.status)}`}>
-                {ticket.status.replace('_', ' ')}
+              <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(statusStr(ticket.status))}`}>
+                {statusStr(ticket.status).replace('_', ' ')}
               </span>
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
