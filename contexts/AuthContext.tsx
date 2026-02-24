@@ -31,36 +31,58 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null)
 
+function loadCachedUser(): User | null {
+  try {
+    const raw = localStorage.getItem('authUser')
+    return raw ? (JSON.parse(raw) as User) : null
+  } catch {
+    return null
+  }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<User | null>(() => {
+    if (typeof window === 'undefined') return null
+    return loadCachedUser()
+  })
   const [loading, setLoading] = useState(true)
+
+  const setAndCacheUser = useCallback((u: User | null) => {
+    setUser(u)
+    if (u) {
+      localStorage.setItem('authUser', JSON.stringify(u))
+    } else {
+      localStorage.removeItem('authUser')
+    }
+  }, [])
 
   const refresh = useCallback(async () => {
     try {
       const res = await authApi.me()
-      setUser(res.data.data)
+      setAndCacheUser(res.data.data)
     } catch {
-      setUser(null)
+      setAndCacheUser(null)
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
     }
-  }, [])
+  }, [setAndCacheUser])
 
   useEffect(() => {
     const token = localStorage.getItem('accessToken')
     if (token) {
       refresh().finally(() => setLoading(false))
     } else {
+      setAndCacheUser(null)
       setLoading(false)
     }
-  }, [refresh])
+  }, [refresh, setAndCacheUser])
 
   const login = async (email: string, password: string) => {
     const res = await authApi.login({ email, password })
     const { accessToken, refreshToken, user: userData } = res.data.data
     localStorage.setItem('accessToken', accessToken)
     localStorage.setItem('refreshToken', refreshToken)
-    setUser(userData)
+    setAndCacheUser(userData)
   }
 
   const logout = async () => {
@@ -71,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     localStorage.removeItem('accessToken')
     localStorage.removeItem('refreshToken')
-    setUser(null)
+    setAndCacheUser(null)
   }
 
   return (
