@@ -74,20 +74,28 @@ export default function RegisterPage() {
 
     setLoading(true)
     try {
+      // Normalize phone: 07XXXXXXXX → +254XXXXXXXX (Kenya E.164)
+      let phoneNumber: string | undefined
+      if (form.phone) {
+        const p = form.phone.trim()
+        if (p.startsWith('0') && p.length === 10) phoneNumber = '+254' + p.slice(1)
+        else if (p.startsWith('+')) phoneNumber = p
+        else phoneNumber = p
+      }
       await authApi.register({
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
-        phoneNumber: form.phone || undefined,
+        phoneNumber,
         password: form.password,
       })
       setSuccess(true)
       setTimeout(() => router.push('/login'), 3000)
     } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        'Registration failed. Please try again.'
-      setError(msg)
+      const errData = (err as { response?: { data?: { error?: { message?: string | string[] }; message?: string | string[] } } })?.response?.data
+      const raw = errData?.error?.message ?? errData?.message ?? 'Registration failed. Please try again.'
+      const msg = Array.isArray(raw) ? raw.join('. ') : raw
+      setError(typeof msg === 'string' ? msg : 'Registration failed. Please try again.')
     } finally {
       setLoading(false)
     }
