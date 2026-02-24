@@ -17,12 +17,19 @@ interface Category {
   name: string
 }
 
+interface Priority {
+  id: string
+  name: string
+  severityScore: number
+}
+
 export default function NewTicketPage() {
   const { isAuthenticated, loading } = useAuth()
   const router = useRouter()
 
   const [agencies, setAgencies] = useState<Agency[]>([])
   const [categories, setCategories] = useState<Category[]>([])
+  const [priorities, setPriorities] = useState<Priority[]>([])
   const [loadingAgencies, setLoadingAgencies] = useState(true)
   const [loadingCategories, setLoadingCategories] = useState(false)
 
@@ -30,7 +37,7 @@ export default function NewTicketPage() {
     subject: '',
     agencyId: '',
     categoryId: '',
-    priority: 'MEDIUM',
+    priorityId: '',
     description: '',
     tags: '',
   })
@@ -44,6 +51,7 @@ export default function NewTicketPage() {
 
   useEffect(() => {
     if (!isAuthenticated) return
+    // Load agencies and priorities in parallel
     agenciesApi
       .list()
       .then((res) => {
@@ -52,6 +60,20 @@ export default function NewTicketPage() {
       })
       .catch(() => {})
       .finally(() => setLoadingAgencies(false))
+
+    ticketsApi
+      .priorities()
+      .then((res) => {
+        const d = res.data.data
+        const list: Priority[] = Array.isArray(d) ? d : (d?.items ?? [])
+        // Sort by severity so LOW→CRITICAL
+        list.sort((a, b) => a.severityScore - b.severityScore)
+        setPriorities(list)
+        // Default to MEDIUM
+        const medium = list.find((p) => p.name === 'MEDIUM')
+        if (medium) setForm((prev) => ({ ...prev, priorityId: medium.id }))
+      })
+      .catch(() => {})
   }, [isAuthenticated])
 
   // Fetch categories when agency changes
@@ -87,10 +109,10 @@ export default function NewTicketPage() {
       const payload: Record<string, unknown> = {
         subject: form.subject,
         agencyId: form.agencyId,
-        priority: form.priority,
         description: form.description,
         channel: 'WEB',
       }
+      if (form.priorityId) payload.priorityId = form.priorityId
       if (form.categoryId) payload.categoryId = form.categoryId
       if (form.tags) {
         payload.tags = form.tags.split(',').map((t) => t.trim()).filter(Boolean)
@@ -103,9 +125,8 @@ export default function NewTicketPage() {
       })
     } catch (err: unknown) {
       const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
-        'Failed to submit request. Please try again.'
-      setError(msg)
+        (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message
+      setError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to submit request. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -140,7 +161,8 @@ export default function NewTicketPage() {
               <button
                 onClick={() => {
                   setSuccess(null)
-                  setForm({ subject: '', agencyId: '', categoryId: '', priority: 'MEDIUM', description: '', tags: '' })
+                  const medium = priorities.find((p) => p.name === 'MEDIUM')
+                  setForm({ subject: '', agencyId: '', categoryId: '', priorityId: medium?.id ?? '', description: '', tags: '' })
                 }}
                 className="inline-flex items-center justify-center rounded-md border border-border px-5 py-2.5 text-sm font-medium hover:bg-muted transition-colors"
               >
@@ -251,15 +273,17 @@ export default function NewTicketPage() {
                 Priority <span className="text-destructive">*</span>
               </label>
               <select
-                name="priority"
-                value={form.priority}
+                name="priorityId"
+                value={form.priorityId}
                 onChange={handleChange}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <option value="LOW">Low</option>
-                <option value="MEDIUM">Medium</option>
-                <option value="HIGH">High</option>
-                <option value="CRITICAL">Critical</option>
+                {priorities.length === 0 && <option value="">Loading priorities…</option>}
+                {priorities.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name.charAt(0) + p.name.slice(1).toLowerCase()}
+                  </option>
+                ))}
               </select>
             </div>
 
