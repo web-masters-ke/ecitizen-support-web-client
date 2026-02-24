@@ -6,16 +6,19 @@ import { Shield, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from 'lucide-
 import { authApi } from '@/lib/api'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
+const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/
+
 function getPasswordStrength(password: string): { label: string; color: string; width: string } {
   if (password.length === 0) return { label: '', color: '', width: 'w-0' }
   const hasLower = /[a-z]/.test(password)
   const hasUpper = /[A-Z]/.test(password)
   const hasNumber = /[0-9]/.test(password)
-  const hasSpecial = /[^a-zA-Z0-9]/.test(password)
-  const score = [hasLower, hasUpper, hasNumber, hasSpecial, password.length >= 8].filter(Boolean).length
+  const hasSpecial = /[@$!%*?&#]/.test(password)
+  const hasLength = password.length >= 8
+  const score = [hasLower, hasUpper, hasNumber, hasSpecial, hasLength].filter(Boolean).length
 
   if (score <= 2) return { label: 'Weak', color: 'bg-red-500', width: 'w-1/3' }
-  if (score <= 3) return { label: 'Fair', color: 'bg-amber-500', width: 'w-2/3' }
+  if (score <= 4) return { label: 'Fair', color: 'bg-amber-500', width: 'w-2/3' }
   return { label: 'Strong', color: 'bg-green-500', width: 'w-full' }
 }
 
@@ -55,6 +58,10 @@ export default function RegisterPage() {
       setError('Password must be at least 8 characters.')
       return
     }
+    if (!PASSWORD_REGEX.test(form.password)) {
+      setError('Password must include uppercase, lowercase, a number, and a special character (@$!%*?&#).')
+      return
+    }
     if (!agreed) {
       setError('Please accept the Terms of Service to continue.')
       return
@@ -66,7 +73,7 @@ export default function RegisterPage() {
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
-        phone: form.phone || undefined,
+        phoneNumber: form.phone || undefined,
         password: form.password,
       })
       setSuccess(true)
@@ -241,6 +248,7 @@ export default function RegisterPage() {
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
                       Password strength: <span className="font-medium text-foreground">{strength.label}</span>
+                      {' — '}must include uppercase, lowercase, number &amp; special char (@$!%*?&#)
                     </p>
                   </div>
                 )}
