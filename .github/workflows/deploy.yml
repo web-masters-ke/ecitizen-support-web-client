@@ -1,0 +1,47 @@
+name: Deploy eCitizen Webclient
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Deploy to Server via SSM
+        run: |
+          aws ssm send-command \
+            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --timeout-seconds 600 \
+            --parameters 'commands=[
+              "echo \"Starting eCitizen Webclient deployment...\"",
+              "docker image prune -f 2>/dev/null || true",
+              "rm -rf /opt/ecitizen-support-web-client-new",
+              "git clone --depth=1 https://github.com/web-masters-ke/ecitizen-support-web-client.git /opt/ecitizen-support-web-client-new",
+              "cp /opt/ecitizen-support-web-client/.env /opt/ecitizen-support-web-client-new/.env 2>/dev/null || true",
+              "cd /opt/ecitizen-support-web-client-new && git log --oneline -1",
+              "rm -rf /opt/ecitizen-support-web-client-old",
+              "mv /opt/ecitizen-support-web-client /opt/ecitizen-support-web-client-old 2>/dev/null || true",
+              "mv /opt/ecitizen-support-web-client-new /opt/ecitizen-support-web-client",
+              "cd /opt/ecitizen-support-web-client && docker compose build --no-cache 2>&1 | tail -20",
+              "cd /opt/ecitizen-support-web-client && docker compose up -d 2>&1",
+              "sleep 15",
+              "docker ps --filter name=ecitizen-web --format \"table {{.Names}}\t{{.Status}}\"",
+              "curl -sf http://localhost:3010 > /dev/null && echo \"Webclient healthy\" || echo \"Webclient not ready yet\"",
+              "echo \"eCitizen Webclient deployment complete\""
+            ]' \
+            --region ${{ secrets.AWS_REGION }}
