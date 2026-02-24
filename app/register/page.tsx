@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Shield, Eye, EyeOff, Loader2, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { authApi } from '@/lib/api'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { OfflineBanner } from '@/components/ui/OfflineBanner'
 
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]+$/
 
@@ -64,6 +65,10 @@ export default function RegisterPage() {
     }
     if (!agreed) {
       setError('Please accept the Terms of Service to continue.')
+      return
+    }
+    if (!navigator.onLine) {
+      setError('No internet connection. Please check your network and try again.')
       return
     }
 
@@ -136,6 +141,9 @@ export default function RegisterPage() {
               <h1 className="text-2xl font-bold text-foreground">Create Your Account</h1>
               <p className="mt-1 text-sm text-muted-foreground">Join thousands of Kenyans accessing government services online</p>
             </div>
+
+            {/* Offline banner */}
+            <OfflineBanner />
 
             {/* Error */}
             {error && (

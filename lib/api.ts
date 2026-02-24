@@ -18,7 +18,10 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401 && typeof window !== 'undefined') {
+    // Don't redirect on auth endpoints — let the form handle the error itself
+    const url: string = err.config?.url ?? ''
+    const isAuthCall = url.includes('/auth/login') || url.includes('/auth/register')
+    if (err.response?.status === 401 && typeof window !== 'undefined' && !isAuthCall) {
       localStorage.removeItem('accessToken')
       localStorage.removeItem('refreshToken')
       window.location.href = '/login'

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Shield, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
+import { OfflineBanner } from '@/components/ui/OfflineBanner'
 
 export default function LoginPage() {
   const { login } = useAuth()
@@ -19,6 +20,10 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
+    if (!navigator.onLine) {
+      setError('No internet connection. Please check your network and try again.')
+      return
+    }
     setLoading(true)
     try {
       await login(email, password)
@@ -58,6 +63,9 @@ export default function LoginPage() {
               <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
               <p className="mt-1 text-sm text-muted-foreground">Sign in to your eCitizen account</p>
             </div>
+
+            {/* Offline banner */}
+            <OfflineBanner />
 
             {/* Error */}
             {error && (
