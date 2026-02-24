@@ -18,11 +18,18 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { Button } from '@/components/ui/Button'
 import { cn } from '@/lib/utils'
 
-const navLinks = [
+const publicNavLinks = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
   { href: '/knowledge-base', label: 'Knowledge Base' },
   { href: '/track', label: 'Track Request' },
+]
+
+const authNavLinks = [
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/tickets', label: 'My Tickets' },
+  { href: '/tickets/new', label: 'Submit Request' },
+  { href: '/knowledge-base', label: 'Knowledge Base' },
 ]
 
 export function Navbar() {
@@ -30,6 +37,9 @@ export function Navbar() {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+
+  const navLinks = isAuthenticated ? authNavLinks : publicNavLinks
+  const homeHref = isAuthenticated ? '/dashboard' : '/'
 
   const handleLogout = async () => {
     await logout()
@@ -44,7 +54,7 @@ export function Navbar() {
 
           {/* Logo */}
           <Link
-            href="/"
+            href={homeHref}
             className="flex items-center gap-2 select-none"
             aria-label="eCitizen Service Command Centre"
           >
