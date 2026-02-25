@@ -32,6 +32,7 @@ import {
 } from 'lucide-react'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
+import { HomepageKBSection } from '@/components/sections/HomepageKBSection'
 
 /* ─── Data ─────────────────────────────────────────────────────────────────── */
 
@@ -382,30 +383,6 @@ const steps = [
     icon: CheckCircle,
     title: 'Track & Receive',
     description: "Get real-time SMS and email updates. Collect your document when it's ready.",
-  },
-]
-
-const kbArticles = [
-  {
-    id: '1',
-    title: 'How to Apply for a National ID Card',
-    excerpt:
-      'Step-by-step guide covering required documents, processing times, and how to check your application status.',
-    category: 'Identity',
-  },
-  {
-    id: '2',
-    title: 'Passport Application Guide 2025',
-    excerpt:
-      'Everything you need — booking an appointment, required photos, fees, and collection procedure.',
-    category: 'Travel',
-  },
-  {
-    id: '3',
-    title: 'Complete Guide to Business Registration in Kenya',
-    excerpt:
-      'How to register your company, partnership, or sole proprietorship through the BRS online portal.',
-    category: 'Business',
   },
 ]
 
@@ -792,28 +769,7 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {kbArticles.map(({ id, title, excerpt, category }) => (
-              <div
-                key={id}
-                className="bg-card border border-border rounded-2xl p-6 hover:shadow-md transition-shadow flex flex-col"
-              >
-                <span className="inline-flex w-fit rounded-full bg-primary/10 text-primary text-xs font-medium px-3 py-1 mb-4">
-                  {category}
-                </span>
-                <h3 className="text-base font-semibold text-foreground mb-2 leading-snug">
-                  {title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed flex-1">{excerpt}</p>
-                <Link
-                  href={`/knowledge-base/${id}`}
-                  className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-primary hover:gap-2 transition-all"
-                >
-                  Read More <ArrowRight className="h-4 w-4" />
-                </Link>
-              </div>
-            ))}
-          </div>
+          <HomepageKBSection />
         </div>
       </section>
 
