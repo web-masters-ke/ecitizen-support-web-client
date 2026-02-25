@@ -347,6 +347,29 @@ export default function TicketDetailPage() {
               </div>
             )}
 
+            {/* Your Contact Details on file */}
+            {user && (
+              <div className="rounded-xl border border-border bg-card p-5">
+                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+                  <User className="h-3.5 w-3.5" />
+                  Your Contact Details
+                </h3>
+                <div className="space-y-2 text-sm">
+                  {([
+                    { label: 'Name', value: `${(user as any).firstName ?? ''} ${(user as any).lastName ?? ''}`.trim() },
+                    { label: 'Email', value: (user as any).email ?? '' },
+                    { label: 'Phone', value: (user as any).phoneNumber ?? '' },
+                    { label: 'National ID', value: (user as any).nationalId ?? '' },
+                  ] as { label: string; value: string }[]).filter(({ value }) => value).map(({ label, value }) => (
+                    <div key={label} className="flex justify-between">
+                      <span className="text-muted-foreground">{label}</span>
+                      <span className="text-foreground font-medium text-xs">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* History timeline */}
             {history.length > 0 && (
               <div className="rounded-xl border border-border bg-card p-5">
