@@ -40,6 +40,7 @@ export const authApi = {
     firstName: string
     lastName: string
     phoneNumber?: string
+    nationalId?: string
   }) => api.post('/auth/register', data),
 
   login: (data: { email: string; password: string }) =>
@@ -117,8 +118,8 @@ export const notificationsApi = {
 export const usersApi = {
   me: () => api.get('/auth/me'),
 
-  updateProfile: (id: string, data: Record<string, unknown>) =>
-    api.patch(`/users/${id}`, data),
+  updateProfile: (_id: string, data: Record<string, unknown>) =>
+    api.patch('/users/me', data),
 
   changePassword: (
     id: string,

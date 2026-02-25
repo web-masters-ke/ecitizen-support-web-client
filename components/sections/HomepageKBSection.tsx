@@ -7,12 +7,12 @@ import { kbApi } from '@/lib/api'
 interface KBArticle {
   id: string
   title: string
-  content: string
+  content?: string
   excerpt?: string
   category?: { id: string; name: string }
 }
 
-const FALLBACK_ARTICLES = [
+const FALLBACK_ARTICLES: KBArticle[] = [
   {
     id: '',
     title: 'How to Apply for a National ID Card',
