@@ -124,9 +124,10 @@ export default function NewTicketPage() {
         ticketId: ticket.id,
       })
     } catch (err: unknown) {
-      const msg =
-        (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message
-      setError(Array.isArray(msg) ? msg.join(', ') : msg || 'Failed to submit request. Please try again.')
+      const data = (err as { response?: { data?: { message?: string | string[]; error?: { message?: string | string[] } } } })?.response?.data
+      const raw = data?.error?.message ?? data?.message
+      const msg = Array.isArray(raw) ? raw.join(', ') : raw
+      setError(msg || 'Failed to submit request. Please try again.')
     } finally {
       setSubmitting(false)
     }
