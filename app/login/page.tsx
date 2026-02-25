@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { Suspense, useState } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Shield, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
@@ -7,7 +7,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { OfflineBanner } from '@/components/ui/OfflineBanner'
 
-export default function LoginPage() {
+function LoginForm() {
   const { login } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -163,5 +163,13 @@ export default function LoginPage() {
         © {new Date().getFullYear()} Republic of Kenya. All rights reserved.
       </p>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   )
 }
