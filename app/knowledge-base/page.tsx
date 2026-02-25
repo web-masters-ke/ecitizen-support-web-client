@@ -45,8 +45,8 @@ export default function KnowledgeBasePage() {
     setFetching(true)
     setError('')
     try {
-      const params: Record<string, string | number> = {
-        status: 'PUBLISHED',
+      const params: Record<string, string | number | boolean> = {
+        publishedOnly: true,
         limit: 12,
         page,
       }
@@ -59,8 +59,8 @@ export default function KnowledgeBasePage() {
         setArticles(payload)
         setTotalPages(1)
       } else {
-        setArticles(payload?.items ?? payload?.articles ?? [])
-        setTotalPages(payload?.meta?.totalPages ?? payload?.totalPages ?? 1)
+        setArticles(payload?.data ?? payload?.items ?? payload?.articles ?? [])
+        setTotalPages(payload?.pagination?.totalPages ?? payload?.meta?.totalPages ?? payload?.totalPages ?? 1)
       }
     } catch {
       setError('Failed to load articles.')

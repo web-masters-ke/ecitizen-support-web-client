@@ -1,29 +1,83 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Bell, Loader2, CheckCheck, AlertCircle } from 'lucide-react'
+import { Bell, Loader2, CheckCheck, AlertCircle, Mail, MessageSquare } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { CitizenLayout } from '@/components/layout/CitizenLayout'
 import { notificationsApi } from '@/lib/api'
 import { timeAgo } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 
-interface Notification {
-  id: string
-  title: string
-  message: string
-  isRead: boolean
-  createdAt: string
-  type?: string
+interface NotificationRecipient {
+  recipientEmail?: string
+  recipientPhone?: string
+  deliveryStatus: string
 }
 
-const notificationTypeIcon = (type?: string) => {
-  switch (type) {
-    case 'TICKET_UPDATE': return '🎫'
-    case 'ASSIGNMENT': return '👤'
-    case 'RESOLUTION': return '✅'
-    case 'ESCALATION': return '⚠️'
+interface NotificationItem {
+  id: string
+  triggerEvent?: string
+  channel: string
+  status: string
+  createdAt: string
+  recipients: NotificationRecipient[]
+  ticket?: { ticketNumber?: string; subject?: string } | null
+  template?: { templateName?: string } | null
+}
+
+// Map triggerEvent to human-readable title
+function getNotificationTitle(item: NotificationItem): string {
+  const eventTitles: Record<string, string> = {
+    REGISTRATION: 'Account Created Successfully',
+    TICKET_CREATED: 'New Service Request Submitted',
+    TICKET_ASSIGNED: 'Your Ticket Has Been Assigned',
+    TICKET_ESCALATED: 'Ticket Escalated',
+    TICKET_RESOLVED: 'Your Ticket Has Been Resolved',
+    TICKET_CLOSED: 'Ticket Closed',
+    TICKET_STATUS_CHANGED: 'Ticket Status Updated',
+    PASSWORD_RESET: 'Password Reset',
+    SLA_BREACH: 'SLA Breach Alert',
+  }
+  if (item.triggerEvent && eventTitles[item.triggerEvent]) {
+    return eventTitles[item.triggerEvent]
+  }
+  if (item.template?.templateName) return item.template.templateName
+  return 'System Notification'
+}
+
+// Build descriptive message from available fields
+function getNotificationMessage(item: NotificationItem): string {
+  if (item.ticket?.subject) {
+    return `Re: "${item.ticket.subject}" (${item.ticket.ticketNumber ?? ''})`
+  }
+  const recipient = item.recipients?.[0]
+  const via = item.channel === 'EMAIL' ? `via email${recipient?.recipientEmail ? ` to ${recipient.recipientEmail}` : ''}` : `via ${item.channel.toLowerCase()}`
+  if (item.status === 'FAILED') return `Delivery failed ${via}. We'll retry automatically.`
+  if (item.status === 'SENT') return `Sent successfully ${via}`
+  return `Pending delivery ${via}`
+}
+
+function getNotificationIcon(triggerEvent?: string) {
+  switch (triggerEvent) {
+    case 'TICKET_CREATED':
+    case 'TICKET_ASSIGNED':
+    case 'TICKET_ESCALATED':
+    case 'TICKET_RESOLVED':
+    case 'TICKET_CLOSED':
+    case 'TICKET_STATUS_CHANGED': return '🎫'
+    case 'REGISTRATION': return '🎉'
+    case 'PASSWORD_RESET': return '🔐'
+    case 'SLA_BREACH': return '⚠️'
     default: return '🔔'
+  }
+}
+
+function getStatusBadge(status: string) {
+  switch (status) {
+    case 'SENT': return <span className="text-xs font-medium text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/20 rounded-full px-2 py-0.5">Delivered</span>
+    case 'FAILED': return <span className="text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 rounded-full px-2 py-0.5">Failed</span>
+    case 'PENDING': return <span className="text-xs font-medium text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-full px-2 py-0.5">Pending</span>
+    default: return null
   }
 }
 
@@ -31,7 +85,8 @@ export default function NotificationsPage() {
   const { isAuthenticated, loading } = useAuth()
   const router = useRouter()
 
-  const [notifications, setNotifications] = useState<Notification[]>([])
+  const [notifications, setNotifications] = useState<NotificationItem[]>([])
+  const [acknowledged, setAcknowledged] = useState<Set<string>>(new Set())
   const [fetching, setFetching] = useState(true)
   const [error, setError] = useState('')
   const [markingAll, setMarkingAll] = useState(false)
@@ -46,28 +101,23 @@ export default function NotificationsPage() {
       .list()
       .then((res) => {
         const d = res.data.data
-        setNotifications(Array.isArray(d) ? d : (d?.items ?? []))
+        const items = Array.isArray(d) ? d : (d?.items ?? d?.data ?? [])
+        setNotifications(items)
       })
       .catch(() => setError('Failed to load notifications'))
       .finally(() => setFetching(false))
   }, [isAuthenticated])
 
-  const handleMarkRead = async (id: string) => {
-    try {
-      await notificationsApi.markRead(id)
-      setNotifications((prev) =>
-        prev.map((n) => (n.id === id ? { ...n, isRead: true } : n))
-      )
-    } catch {
-      // silently fail
-    }
+  const handleAcknowledge = (id: string) => {
+    setAcknowledged((prev) => new Set([...prev, id]))
+    notificationsApi.markRead(id).catch(() => {})
   }
 
-  const handleMarkAllRead = async () => {
+  const handleAcknowledgeAll = async () => {
     setMarkingAll(true)
     try {
       await notificationsApi.markAllRead()
-      setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
+      setAcknowledged(new Set(notifications.map((n) => n.id)))
     } catch {
       setError('Failed to mark all as read')
     } finally {
@@ -77,7 +127,7 @@ export default function NotificationsPage() {
 
   if (loading || !isAuthenticated) return null
 
-  const unreadCount = notifications.filter((n) => !n.isRead).length
+  const unacknowledgedCount = notifications.filter((n) => !acknowledged.has(n.id)).length
 
   return (
     <CitizenLayout>
@@ -88,20 +138,18 @@ export default function NotificationsPage() {
           <div>
             <h1 className="text-2xl font-bold text-foreground">Notifications</h1>
             <p className="text-sm text-muted-foreground mt-0.5">
-              {unreadCount > 0 ? `${unreadCount} unread notification${unreadCount !== 1 ? 's' : ''}` : 'All caught up!'}
+              {unacknowledgedCount > 0
+                ? `${unacknowledgedCount} unread notification${unacknowledgedCount !== 1 ? 's' : ''}`
+                : 'All caught up!'}
             </p>
           </div>
-          {unreadCount > 0 && (
+          {unacknowledgedCount > 0 && (
             <button
-              onClick={handleMarkAllRead}
+              onClick={handleAcknowledgeAll}
               disabled={markingAll}
               className="inline-flex items-center gap-2 rounded-md border border-border px-4 py-2 text-sm font-medium hover:bg-muted disabled:opacity-50 transition-colors"
             >
-              {markingAll ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <CheckCheck className="h-4 w-4" />
-              )}
+              {markingAll ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCheck className="h-4 w-4" />}
               Mark All Read
             </button>
           )}
@@ -138,40 +186,51 @@ export default function NotificationsPage() {
           </div>
         ) : (
           <div className="space-y-2">
-            {notifications.map((notif) => (
-              <div
-                key={notif.id}
-                onClick={() => !notif.isRead && handleMarkRead(notif.id)}
-                className={cn(
-                  'relative flex gap-4 rounded-xl border bg-card p-5 transition-all cursor-pointer',
-                  notif.isRead
-                    ? 'border-border opacity-70 hover:opacity-100'
-                    : 'border-primary/30 border-l-4 border-l-primary shadow-sm hover:shadow-md'
-                )}
-              >
-                {/* Icon */}
-                <div className={cn(
-                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg',
-                  notif.isRead ? 'bg-muted' : 'bg-primary/10'
-                )}>
-                  {notificationTypeIcon(notif.type)}
-                </div>
-
-                {/* Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2">
-                    <p className={cn('text-sm leading-snug', notif.isRead ? 'text-foreground font-normal' : 'text-foreground font-semibold')}>
-                      {notif.title}
-                    </p>
-                    {!notif.isRead && (
-                      <span className="flex h-2.5 w-2.5 shrink-0 rounded-full bg-primary mt-1" />
-                    )}
+            {notifications.map((notif) => {
+              const isRead = acknowledged.has(notif.id)
+              return (
+                <div
+                  key={notif.id}
+                  onClick={() => !isRead && handleAcknowledge(notif.id)}
+                  className={cn(
+                    'relative flex gap-4 rounded-xl border bg-card p-5 transition-all cursor-pointer',
+                    isRead
+                      ? 'border-border opacity-70 hover:opacity-100'
+                      : 'border-primary/30 border-l-4 border-l-primary shadow-sm hover:shadow-md'
+                  )}
+                >
+                  {/* Icon */}
+                  <div className={cn(
+                    'flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-lg',
+                    isRead ? 'bg-muted' : 'bg-primary/10'
+                  )}>
+                    {getNotificationIcon(notif.triggerEvent)}
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground leading-relaxed">{notif.message}</p>
-                  <p className="mt-2 text-xs text-muted-foreground/70">{timeAgo(notif.createdAt)}</p>
+
+                  {/* Content */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2 flex-wrap">
+                      <p className={cn('text-sm leading-snug', isRead ? 'text-foreground font-normal' : 'text-foreground font-semibold')}>
+                        {getNotificationTitle(notif)}
+                      </p>
+                      <div className="flex items-center gap-2 shrink-0">
+                        {getStatusBadge(notif.status)}
+                        {/* Channel icon */}
+                        {notif.channel === 'EMAIL'
+                          ? <Mail className="h-3.5 w-3.5 text-muted-foreground/60" />
+                          : <MessageSquare className="h-3.5 w-3.5 text-muted-foreground/60" />
+                        }
+                        {!isRead && <span className="flex h-2.5 w-2.5 shrink-0 rounded-full bg-primary" />}
+                      </div>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                      {getNotificationMessage(notif)}
+                    </p>
+                    <p className="mt-2 text-xs text-muted-foreground/70">{timeAgo(notif.createdAt)}</p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>

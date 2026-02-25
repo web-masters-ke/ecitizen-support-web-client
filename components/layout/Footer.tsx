@@ -2,32 +2,32 @@ import Link from 'next/link'
 import { Shield, Phone, Mail, MapPin, Globe } from 'lucide-react'
 
 const popularServices = [
-  { href: '/register', label: 'National ID Application' },
-  { href: '/register', label: 'Passport Application' },
-  { href: '/register', label: 'Driving Licence' },
-  { href: '/register', label: 'Business Registration' },
-  { href: '/register', label: 'KRA PIN' },
-  { href: '/register', label: 'NHIF Registration' },
-  { href: '/register', label: 'Police Clearance' },
-  { href: '/register', label: 'Birth Certificate' },
+  { href: '/tickets/new', label: 'National ID Application' },
+  { href: '/tickets/new', label: 'Passport Application' },
+  { href: '/tickets/new', label: 'Driving Licence' },
+  { href: '/tickets/new', label: 'Business Registration' },
+  { href: '/tickets/new', label: 'KRA PIN' },
+  { href: '/tickets/new', label: 'NHIF Registration' },
+  { href: '/tickets/new', label: 'Police Clearance' },
+  { href: '/tickets/new', label: 'Birth Certificate' },
 ]
 
 const keyAgencies = [
-  { href: '/register', label: 'NTSA' },
-  { href: '/register', label: 'KRA' },
-  { href: '/register', label: 'NHIF' },
-  { href: '/register', label: 'NSSF' },
-  { href: '/register', label: 'Immigration Dept' },
-  { href: '/register', label: 'KNEC' },
-  { href: '/register', label: 'HELB' },
-  { href: '/register', label: 'DCI' },
+  { href: '/tickets/new', label: 'NTSA' },
+  { href: '/tickets/new', label: 'KRA' },
+  { href: '/tickets/new', label: 'NHIF' },
+  { href: '/tickets/new', label: 'NSSF' },
+  { href: '/tickets/new', label: 'Immigration Dept' },
+  { href: '/tickets/new', label: 'KNEC' },
+  { href: '/tickets/new', label: 'HELB' },
+  { href: '/tickets/new', label: 'DCI' },
 ]
 
 const quickLinks = [
   { href: '/about', label: 'About eCitizen' },
   { href: '/services', label: 'All Services' },
   { href: '/knowledge-base', label: 'Help Centre' },
-  { href: '/login', label: 'Track My Request' },
+  { href: '/track', label: 'Track My Request' },
   { href: '/contact', label: 'Contact Us' },
 ]
 

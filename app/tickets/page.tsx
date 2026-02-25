@@ -20,8 +20,8 @@ interface Ticket {
   ticketNumber: string
   subject: string
   agency?: { agencyName: string }
-  status: string
-  priority: string
+  status: unknown  // API returns {id, name, isClosedStatus}
+  priority: unknown // API returns {id, name, severityScore}
   createdAt: string
   updatedAt: string
 }
@@ -215,8 +215,8 @@ export default function TicketsPage() {
                         </span>
                       </td>
                       <td className={`px-6 py-4 text-xs font-medium hidden md:table-cell whitespace-nowrap`}>
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityBadgeColor(ticket.priority)}`}>
-                          {ticket.priority}
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityBadgeColor(statusStr(ticket.priority))}`}>
+                          {statusStr(ticket.priority)}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-muted-foreground hidden lg:table-cell whitespace-nowrap text-xs">

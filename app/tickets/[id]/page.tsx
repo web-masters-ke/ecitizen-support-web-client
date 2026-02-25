@@ -20,19 +20,18 @@ interface TicketDetail {
   ticketNumber: string
   subject: string
   description: string
-  status: string
-  priority: string
+  status: unknown  // API returns {id, name, isClosedStatus}
+  priority: unknown // API returns {id, name, severityScore}
   channel: string
   createdAt: string
   updatedAt: string
   agency?: { id: string; agencyName: string }
   category?: { name: string }
-  assignedAgent?: { firstName: string; lastName: string; email: string }
-  slaPolicy?: { name: string }
-  responseDeadline?: string
-  resolutionDeadline?: string
-  slaStatus?: string
-  tags?: string[]
+  assignee?: { firstName: string; lastName: string; email: string }
+  slaResponseDueAt?: string
+  slaResolutionDueAt?: string
+  slaTracking?: { slaStatus?: string }
+  tagMappings?: Array<{ tag?: { name: string } }>
 }
 
 interface Message {
@@ -44,11 +43,11 @@ interface Message {
 }
 
 interface HistoryEntry {
-  id: string
-  action: string
-  description?: string
-  createdAt: string
-  user?: { firstName: string; lastName: string }
+  id: number | string
+  changeReason?: string
+  changedAt: string
+  changer?: { firstName: string; lastName: string }
+  newStatus?: { id: string; name: string }
 }
 
 const priorityBadge: Record<string, string> = {
@@ -142,6 +141,11 @@ export default function TicketDetailPage() {
 
   if (!ticket) return null
 
+  const statusLabel = statusStr(ticket.status)
+  const priorityLabel = statusStr(ticket.priority)
+  const tags = ticket.tagMappings?.map((m) => m.tag?.name).filter(Boolean) ?? []
+  const slaStatus = ticket.slaTracking?.slaStatus
+
   return (
     <CitizenLayout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -160,11 +164,11 @@ export default function TicketDetailPage() {
         <div className="mb-6">
           <div className="flex flex-wrap items-center gap-2 mb-2">
             <span className="font-mono text-sm font-semibold text-primary">{ticket.ticketNumber}</span>
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusStr(ticket.status))}`}>
-              {statusStr(ticket.status).replace('_', ' ')}
+            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusLabel)}`}>
+              {statusLabel.replace('_', ' ')}
             </span>
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityBadge[ticket.priority] ?? ''}`}>
-              {ticket.priority}
+            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityBadge[priorityLabel] ?? ''}`}>
+              {priorityLabel}
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-foreground">{ticket.subject}</h1>
@@ -185,9 +189,9 @@ export default function TicketDetailPage() {
               <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
                 {ticket.description}
               </p>
-              {ticket.tags && ticket.tags.length > 0 && (
+              {tags.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {ticket.tags.map((tag) => (
+                  {tags.map((tag) => (
                     <span key={tag} className="rounded-full bg-muted text-muted-foreground text-xs px-2.5 py-0.5">
                       #{tag}
                     </span>
@@ -236,7 +240,7 @@ export default function TicketDetailPage() {
               </div>
 
               {/* Reply box */}
-              {['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED'].includes(statusStr(ticket.status)) && (
+              {['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED'].includes(statusLabel) && (
                 <div className="border-t border-border p-4">
                   <div className="flex gap-2">
                     <textarea
@@ -268,8 +272,8 @@ export default function TicketDetailPage() {
             {/* Status card */}
             <div className="rounded-xl border border-border bg-card p-5">
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Status</h3>
-              <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(statusStr(ticket.status))}`}>
-                {statusStr(ticket.status).replace('_', ' ')}
+              <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(statusLabel)}`}>
+                {statusLabel.replace('_', ' ')}
               </span>
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -297,12 +301,12 @@ export default function TicketDetailPage() {
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">Assigned Agent</p>
-                  {ticket.assignedAgent ? (
+                  {ticket.assignee ? (
                     <div className="flex items-center gap-2">
                       <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                        {getInitials(ticket.assignedAgent.firstName, ticket.assignedAgent.lastName)}
+                        {getInitials(ticket.assignee.firstName, ticket.assignee.lastName)}
                       </div>
-                      <span className="font-medium">{ticket.assignedAgent.firstName} {ticket.assignedAgent.lastName}</span>
+                      <span className="font-medium">{ticket.assignee.firstName} {ticket.assignee.lastName}</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 text-muted-foreground">
@@ -315,28 +319,28 @@ export default function TicketDetailPage() {
             </div>
 
             {/* SLA card */}
-            {(ticket.responseDeadline || ticket.resolutionDeadline) && (
+            {(ticket.slaResponseDueAt || ticket.slaResolutionDueAt) && (
               <div className="rounded-xl border border-border bg-card p-5">
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">SLA</h3>
                 <div className="space-y-2 text-sm">
-                  {ticket.slaStatus && (
+                  {slaStatus && (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">SLA Status</span>
-                      <span className={`text-xs font-medium ${ticket.slaStatus === 'BREACHED' ? 'text-destructive' : 'text-green-600 dark:text-green-400'}`}>
-                        {ticket.slaStatus}
+                      <span className={`text-xs font-medium ${slaStatus === 'BREACHED' ? 'text-destructive' : 'text-green-600 dark:text-green-400'}`}>
+                        {slaStatus}
                       </span>
                     </div>
                   )}
-                  {ticket.responseDeadline && (
+                  {ticket.slaResponseDueAt && (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Response By</span>
-                      <span className="text-xs text-foreground">{formatDateTime(ticket.responseDeadline)}</span>
+                      <span className="text-xs text-foreground">{formatDateTime(ticket.slaResponseDueAt)}</span>
                     </div>
                   )}
-                  {ticket.resolutionDeadline && (
+                  {ticket.slaResolutionDueAt && (
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Resolve By</span>
-                      <span className="text-xs text-foreground">{formatDateTime(ticket.resolutionDeadline)}</span>
+                      <span className="text-xs text-foreground">{formatDateTime(ticket.slaResolutionDueAt)}</span>
                     </div>
                   )}
                 </div>
@@ -357,13 +361,15 @@ export default function TicketDetailPage() {
                         )}
                       </div>
                       <div className="pb-3">
-                        <p className="text-xs font-medium text-foreground">{entry.action?.replace('_', ' ')}</p>
-                        {entry.description && (
-                          <p className="text-xs text-muted-foreground mt-0.5">{entry.description}</p>
+                        <p className="text-xs font-medium text-foreground">
+                          {entry.newStatus?.name ?? entry.changeReason ?? 'Status changed'}
+                        </p>
+                        {entry.changeReason && entry.newStatus?.name && (
+                          <p className="text-xs text-muted-foreground mt-0.5">{entry.changeReason}</p>
                         )}
                         <div className="flex items-center gap-1 mt-1 text-xs text-muted-foreground">
                           <Clock className="h-3 w-3" />
-                          {timeAgo(entry.createdAt)}
+                          {timeAgo(entry.changedAt)}
                         </div>
                       </div>
                     </div>

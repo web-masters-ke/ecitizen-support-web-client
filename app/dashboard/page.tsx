@@ -30,7 +30,7 @@ interface TicketRow {
 
 interface Notification {
   id: string
-  isRead: boolean
+  status: string  // SENT | FAILED | PENDING
 }
 
 export default function DashboardPage() {
@@ -57,10 +57,9 @@ export default function DashboardPage() {
       .then(([ticketsRes, notifRes]) => {
         const t = ticketsRes.data.data
         setTickets(Array.isArray(t) ? t : (t?.items ?? t?.tickets ?? []))
-        const notifs: Notification[] = notifRes.data.data
-        if (Array.isArray(notifs)) {
-          setUnreadCount(notifs.filter((n) => !n.isRead).length)
-        }
+        const nd = notifRes.data.data
+        const notifs: Notification[] = Array.isArray(nd) ? nd : (nd?.items ?? nd?.data ?? [])
+        setUnreadCount(notifs.length)
       })
       .catch(() => setError('Failed to load dashboard data'))
       .finally(() => setTicketsLoading(false))
