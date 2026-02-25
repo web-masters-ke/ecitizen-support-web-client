@@ -19,7 +19,8 @@ export default function ProfilePage() {
   const [profileForm, setProfileForm] = useState({
     firstName: user?.firstName ?? '',
     lastName: user?.lastName ?? '',
-    phone: user?.phone ?? '',
+    phone: user?.phoneNumber ?? '',
+    nationalId: user?.nationalId ?? '',
   })
   const [profileLoading, setProfileLoading] = useState(false)
   const [profileError, setProfileError] = useState('')
@@ -59,7 +60,8 @@ export default function ProfilePage() {
       await usersApi.updateProfile(user.id, {
         firstName: profileForm.firstName,
         lastName: profileForm.lastName,
-        phone: profileForm.phone || undefined,
+        phoneNumber: profileForm.phone || undefined,
+        nationalId: profileForm.nationalId.trim() || undefined,
       })
       await refresh()
       setProfileSuccess('Profile updated successfully!')
@@ -213,6 +215,20 @@ export default function ProfilePage() {
                   value={profileForm.phone}
                   onChange={handleProfileChange}
                   placeholder="+254 7XX XXX XXX"
+                  className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-foreground mb-1.5">
+                  National ID <span className="text-muted-foreground text-xs">(optional — required for official services)</span>
+                </label>
+                <input
+                  name="nationalId"
+                  type="text"
+                  value={profileForm.nationalId}
+                  onChange={handleProfileChange}
+                  placeholder="e.g. 12345678"
                   className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>

@@ -31,6 +31,7 @@ export default function RegisterPage() {
     lastName: '',
     email: '',
     phone: '',
+    nationalId: '',
     password: '',
     confirmPassword: '',
   })
@@ -87,6 +88,7 @@ export default function RegisterPage() {
         lastName: form.lastName,
         email: form.email,
         phoneNumber,
+        nationalId: form.nationalId.trim() || undefined,
         password: form.password,
       })
       setSuccess(true)
@@ -226,6 +228,22 @@ export default function RegisterPage() {
                   value={form.phone}
                   onChange={handleChange}
                   placeholder="+254 7XX XXX XXX"
+                  className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                />
+              </div>
+
+              {/* National ID */}
+              <div>
+                <label htmlFor="nationalId" className="block text-sm font-medium text-foreground mb-1.5">
+                  National ID <span className="text-muted-foreground text-xs">(optional — required for official services)</span>
+                </label>
+                <input
+                  id="nationalId"
+                  name="nationalId"
+                  type="text"
+                  value={form.nationalId}
+                  onChange={handleChange}
+                  placeholder="e.g. 12345678"
                   className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
