@@ -14,8 +14,9 @@ interface KBCategory {
 interface KBArticle {
   id: string
   title: string
-  content: string
+  content?: string
   excerpt?: string
+  summary?: string
   category?: { id: string; name: string }
   tags?: string[]
   viewCount?: number
@@ -174,7 +175,7 @@ export default function KnowledgeBasePage() {
                   {article.title}
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed flex-1 line-clamp-3">
-                  {article.excerpt ?? truncate(article.content?.replace(/<[^>]*>/g, '') ?? '', 150)}
+                  {article.excerpt ?? article.summary ?? truncate(article.content?.replace(/<[^>]*>/g, '') ?? '', 150)}
                 </p>
                 {article.tags && article.tags.length > 0 && (
                   <div className="mt-3 flex flex-wrap gap-1">
