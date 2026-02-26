@@ -3,6 +3,7 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { Search, ArrowRight, ExternalLink } from 'lucide-react'
 import { PublicLayout } from '@/components/layout/PublicLayout'
+import { useAuth } from '@/contexts/AuthContext'
 
 /* ─── Data ─────────────────────────────────────────────────────────────────── */
 
@@ -158,6 +159,7 @@ const TOTAL_SERVICES = SERVICE_CATEGORIES.reduce((sum, cat) => sum + cat.service
 /* ─── Page ─────────────────────────────────────────────────────────────────── */
 
 export default function ServicesPage() {
+  const { isAuthenticated } = useAuth()
   const [search, setSearch] = useState('')
 
   const filtered = useMemo(() => {
@@ -286,10 +288,14 @@ export default function ServicesPage() {
                       {service}
                     </p>
                     <Link
-                      href="/register"
+                      href={
+                        isAuthenticated
+                          ? `/tickets/new?subject=${encodeURIComponent(service)}`
+                          : `/login?redirect=${encodeURIComponent('/tickets/new?subject=' + encodeURIComponent(service))}`
+                      }
                       className="inline-flex items-center gap-1.5 text-xs font-semibold text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors group-hover:gap-2"
                     >
-                      Apply
+                      {isAuthenticated ? 'Submit Request' : 'Apply'}
                       <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
                     </Link>
 

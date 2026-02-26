@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Loader2, AlertCircle, CheckCircle2, FileText } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { CitizenLayout } from '@/components/layout/CitizenLayout'
@@ -24,8 +24,10 @@ interface Priority {
 }
 
 export default function NewTicketPage() {
-  const { isAuthenticated, loading } = useAuth()
+  const { isAuthenticated, loading, user } = useAuth()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const prefilledSubject = searchParams.get('subject') ?? ''
 
   const [agencies, setAgencies] = useState<Agency[]>([])
   const [categories, setCategories] = useState<Category[]>([])
@@ -34,7 +36,7 @@ export default function NewTicketPage() {
   const [loadingCategories, setLoadingCategories] = useState(false)
 
   const [form, setForm] = useState({
-    subject: '',
+    subject: prefilledSubject,
     agencyId: '',
     categoryId: '',
     priorityId: '',
@@ -197,6 +199,17 @@ export default function NewTicketPage() {
             <h1 className="text-2xl font-bold text-foreground">Submit New Service Request</h1>
           </div>
         </div>
+
+        {/* Contact details hint */}
+        {user && (!(user as any).phoneNumber || !(user as any).nationalId) && (
+          <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-3 text-sm text-amber-800 dark:text-amber-300 flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+            <span>
+              Your profile is missing{[!(user as any).phoneNumber && 'phone number', !(user as any).nationalId && 'national ID'].filter(Boolean).join(' and ')}.{' '}
+              <Link href="/profile" className="font-semibold underline underline-offset-2">Update profile</Link> to help the agency contact you.
+            </span>
+          </div>
+        )}
 
         {/* Form card */}
         <div className="rounded-xl border border-border bg-card p-6 sm:p-8">

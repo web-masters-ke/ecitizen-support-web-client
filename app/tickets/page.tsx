@@ -57,12 +57,14 @@ export default function TicketsPage() {
 
       const res = await ticketsApi.list(params)
       const payload = res.data.data
+      // TransformInterceptor extracts { data, meta } to top level,
+      // so res.data.data is the array and res.data.meta has pagination
       if (Array.isArray(payload)) {
         setTickets(payload)
-        setTotalPages(1)
+        setTotalPages(res.data.meta?.totalPages ?? 1)
       } else {
-        setTickets(payload?.items ?? payload?.tickets ?? [])
-        setTotalPages(payload?.meta?.totalPages ?? payload?.totalPages ?? 1)
+        setTickets(payload?.items ?? payload?.tickets ?? payload?.data ?? [])
+        setTotalPages(payload?.meta?.totalPages ?? payload?.totalPages ?? res.data.meta?.totalPages ?? 1)
       }
     } catch {
       setError('Failed to load tickets. Please try again.')
