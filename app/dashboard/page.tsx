@@ -50,18 +50,22 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!isAuthenticated) return
-    Promise.all([
+    Promise.allSettled([
       ticketsApi.list({ limit: 5, page: 1 }),
       notificationsApi.list(),
     ])
-      .then(([ticketsRes, notifRes]) => {
-        const t = ticketsRes.data.data
-        setTickets(Array.isArray(t) ? t : (t?.items ?? t?.tickets ?? []))
-        const nd = notifRes.data.data
-        const notifs: Notification[] = Array.isArray(nd) ? nd : (nd?.items ?? nd?.data ?? [])
-        setUnreadCount(notifs.length)
+      .then(([ticketsResult, notifResult]) => {
+        if (ticketsResult.status === 'fulfilled') {
+          const t = ticketsResult.value.data.data
+          setTickets(Array.isArray(t) ? t : (t?.data ?? []))
+        } else {
+          setError('Failed to load your tickets')
+        }
+        if (notifResult.status === 'fulfilled') {
+          const nd = notifResult.value.data
+          setUnreadCount(nd?.meta?.unreadCount ?? 0)
+        }
       })
-      .catch(() => setError('Failed to load dashboard data'))
       .finally(() => setTicketsLoading(false))
   }, [isAuthenticated])
 
