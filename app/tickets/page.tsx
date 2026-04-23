@@ -13,7 +13,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext'
 import { CitizenLayout } from '@/components/layout/CitizenLayout'
 import { ticketsApi } from '@/lib/api'
-import { getStatusColor, getPriorityColor, formatDate, statusStr } from '@/lib/utils'
+import { getStatusColor, formatDate, statusStr } from '@/lib/utils'
 
 interface Ticket {
   id: string

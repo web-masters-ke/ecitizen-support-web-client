@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import {
@@ -15,6 +15,17 @@ import {
 import { PublicLayout } from '@/components/layout/PublicLayout'
 import { kbApi } from '@/lib/api'
 import { formatDate } from '@/lib/utils'
+
+// Strip script tags, event handlers, and javascript: hrefs to prevent XSS
+function sanitizeHtml(html: string): string {
+  return html
+    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    .replace(/<\s*\/?\s*script[^>]*>/gi, '')
+    .replace(/\bon\w+\s*=\s*(['"])[^'"]*\1/gi, '')
+    .replace(/\bon\w+\s*=\s*[^\s>]+/gi, '')
+    .replace(/href\s*=\s*(['"])\s*javascript:[^'"]*\1/gi, 'href="#"')
+    .replace(/src\s*=\s*(['"])\s*javascript:[^'"]*\1/gi, 'src=""')
+}
 
 interface KBArticle {
   id: string
@@ -38,6 +49,7 @@ export default function KBArticlePage() {
   const [fetching, setFetching] = useState(true)
   const [error, setError] = useState('')
   const [feedback, setFeedback] = useState<'helpful' | 'not_helpful' | null>(null)
+  const safeContent = useMemo(() => (article ? sanitizeHtml(article.content) : ''), [article])
 
   useEffect(() => {
     if (!articleId) return
@@ -142,7 +154,7 @@ export default function KBArticlePage() {
         {/* Article content */}
         <div
           className="prose dark:prose-invert max-w-none text-foreground prose-headings:text-foreground prose-p:text-foreground prose-li:text-foreground prose-a:text-primary"
-          dangerouslySetInnerHTML={{ __html: article.content }}
+          dangerouslySetInnerHTML={{ __html: safeContent }}
         />
 
         {/* Tags */}

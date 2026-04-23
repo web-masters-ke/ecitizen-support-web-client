@@ -1,10 +1,11 @@
 'use client'
 import axios from 'axios'
+import type { AxiosInstance } from 'axios'
 
 const baseURL = process.env.NEXT_PUBLIC_API_URL
 if (!baseURL) throw new Error('NEXT_PUBLIC_API_URL is not set — add it to .env.local')
 
-const api = axios.create({
+const api: AxiosInstance = axios.create({
   baseURL,
   headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
@@ -18,17 +19,63 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+// Track whether a refresh is already in-flight to prevent cascading calls
+let isRefreshing = false
+let failedQueue: Array<{ resolve: (v: unknown) => void; reject: (e: unknown) => void }> = []
+
+function processQueue(error: unknown, token: string | null) {
+  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve(token)))
+  failedQueue = []
+}
+
 api.interceptors.response.use(
   (res) => res,
-  (err) => {
-    // Don't redirect on auth endpoints — let the form handle the error itself
+  async (err) => {
     const url: string = err.config?.url ?? ''
-    const isAuthCall = url.includes('/auth/login') || url.includes('/auth/register')
+    const isAuthCall =
+      url.includes('/auth/login') ||
+      url.includes('/auth/register') ||
+      url.includes('/auth/refresh')
+
     if (err.response?.status === 401 && typeof window !== 'undefined' && !isAuthCall) {
-      localStorage.removeItem('accessToken')
-      localStorage.removeItem('refreshToken')
-      window.location.href = '/login'
+      const refreshToken = localStorage.getItem('refreshToken')
+
+      if (!refreshToken) {
+        localStorage.removeItem('accessToken')
+        window.location.href = '/login'
+        return Promise.reject(err)
+      }
+
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject })
+        }).then((token) => {
+          err.config.headers.Authorization = `Bearer ${token}`
+          return api.request(err.config)
+        })
+      }
+
+      isRefreshing = true
+      try {
+        const res = await axios.post(`${baseURL}/auth/refresh`, { refreshToken })
+        const { accessToken, refreshToken: newRefresh } = res.data?.data ?? res.data
+        localStorage.setItem('accessToken', accessToken)
+        if (newRefresh) localStorage.setItem('refreshToken', newRefresh)
+        api.defaults.headers.common.Authorization = `Bearer ${accessToken}`
+        processQueue(null, accessToken)
+        err.config.headers.Authorization = `Bearer ${accessToken}`
+        return api.request(err.config)
+      } catch (refreshErr) {
+        processQueue(refreshErr, null)
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
+        window.location.href = '/login'
+        return Promise.reject(refreshErr)
+      } finally {
+        isRefreshing = false
+      }
     }
+
     return Promise.reject(err)
   }
 )
@@ -58,6 +105,9 @@ export const authApi = {
 
   resetPassword: (token: string, password: string) =>
     api.post('/auth/reset-password', { token, password }),
+
+  refreshToken: (refreshToken: string) =>
+    api.post('/auth/refresh', { refreshToken }),
 }
 
 // ─── Tickets ──────────────────────────────────────────────────────────────────
@@ -128,6 +178,12 @@ export const usersApi = {
     id: string,
     data: { currentPassword: string; newPassword: string }
   ) => api.patch(`/users/${id}/password`, data),
+}
+
+// ─── Contact ──────────────────────────────────────────────────────────────────
+export const contactApi = {
+  submit: (data: { fullName: string; email: string; phone?: string; subject: string; message: string }) =>
+    api.post('/contact', data),
 }
 
 // ─── Health ───────────────────────────────────────────────────────────────────
