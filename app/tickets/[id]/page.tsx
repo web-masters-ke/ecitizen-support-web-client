@@ -76,7 +76,7 @@ export default function TicketDetailPage() {
   const localAudioRef = useRef<HTMLAudioElement>(null)
   const remoteAudioRef = useRef<HTMLAudioElement>(null)
 
-  const { status: callStatus, remoteStream, isMuted, startCall, endCall, toggleMute } = useWebRTCCall({
+  const { status: callStatus, remoteStream, isMuted, startCall, hangup, toggleMute } = useWebRTCCall({
     userId: (user as any)?.id ?? '',
     userName: `${(user as any)?.firstName ?? ''} ${(user as any)?.lastName ?? ''}`.trim(),
     onConnected: (id) => { setCallLogId(id); setCallStartedAt(new Date()) },
@@ -143,15 +143,16 @@ export default function TicketDetailPage() {
     try {
       const res = await callsApi.start(ticket.assignee.id, ticketId, ticket.agency?.id)
       const log = res.data.data
-      setCallLogId(log?.id ?? log?.data?.id ?? null)
-      await startCall(ticket.assignee.id)
+      const logId = log?.id ?? log?.data?.id ?? null
+      setCallLogId(logId)
+      await startCall({ targetUserId: ticket.assignee.id, callLogId: logId ?? '' })
     } catch {
       setCallError('Could not start call. Please try again.')
     }
   }
 
   const handleEndCall = async () => {
-    endCall()
+    if (ticket?.assignee?.id) hangup(ticket.assignee.id)
     if (callLogId) {
       const dur = callStartedAt ? Math.round((Date.now() - callStartedAt.getTime()) / 1000) : 0
       await callsApi.updateStatus(callLogId, 'ENDED', dur).catch(() => {})
