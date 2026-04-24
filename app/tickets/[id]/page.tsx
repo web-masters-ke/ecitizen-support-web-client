@@ -1,18 +1,15 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
 import {
-  ArrowLeft,
-  Loader2,
-  Send,
-  AlertCircle,
-  Clock,
-  User,
+  ArrowLeft, Loader2, Send, AlertCircle, Clock, User,
+  Phone, PhoneOff, PhoneMissed, MicOff, Mic, Volume2,
 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { CitizenLayout } from '@/components/layout/CitizenLayout'
-import { ticketsApi } from '@/lib/api'
+import { ticketsApi, callsApi } from '@/lib/api'
+import { useWebRTCCall } from '@/hooks/useWebRTCCall'
 import { getStatusColor, formatDate, formatDateTime, timeAgo, getInitials, statusStr } from '@/lib/utils'
 
 interface TicketDetail {
@@ -20,14 +17,14 @@ interface TicketDetail {
   ticketNumber: string
   subject: string
   description: string
-  status: unknown  // API returns {id, name, isClosedStatus}
-  priority: unknown // API returns {id, name, severityScore}
+  status: unknown
+  priority: unknown
   channel: string
   createdAt: string
   updatedAt: string
   agency?: { id: string; agencyName: string }
   category?: { name: string }
-  assignee?: { firstName: string; lastName: string; email: string }
+  assignee?: { id: string; firstName: string; lastName: string; email: string }
   slaResponseDueAt?: string
   slaResolutionDueAt?: string
   slaTracking?: { slaStatus?: string }
@@ -68,32 +65,57 @@ export default function TicketDetailPage() {
   const [history, setHistory] = useState<HistoryEntry[]>([])
   const [fetching, setFetching] = useState(true)
   const [error, setError] = useState('')
-
   const [reply, setReply] = useState('')
   const [sending, setSending] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+
+  // ── Call state ─────────────────────────────────────────────────────────────
+  const [callLogId, setCallLogId] = useState<string | null>(null)
+  const [callStartedAt, setCallStartedAt] = useState<Date | null>(null)
+  const [callError, setCallError] = useState('')
+  const localAudioRef = useRef<HTMLAudioElement>(null)
+  const remoteAudioRef = useRef<HTMLAudioElement>(null)
+
+  const { status: callStatus, remoteStream, isMuted, startCall, endCall, toggleMute } = useWebRTCCall({
+    userId: (user as any)?.id ?? '',
+    userName: `${(user as any)?.firstName ?? ''} ${(user as any)?.lastName ?? ''}`.trim(),
+    onConnected: (id) => { setCallLogId(id); setCallStartedAt(new Date()) },
+    onCallEnded: () => { setCallLogId(null); setCallStartedAt(null) },
+  })
+
+  useEffect(() => {
+    if (remoteStream && remoteAudioRef.current) {
+      remoteAudioRef.current.srcObject = remoteStream
+    }
+  }, [remoteStream])
 
   useEffect(() => {
     if (!loading && !isAuthenticated) router.push('/login')
   }, [loading, isAuthenticated, router])
 
-  useEffect(() => {
+  const fetchTicket = useCallback(async () => {
     if (!isAuthenticated || !ticketId) return
-    Promise.all([
-      ticketsApi.get(ticketId),
-      ticketsApi.getMessages(ticketId),
-      ticketsApi.getHistory(ticketId),
-    ])
-      .then(([ticketRes, msgRes, histRes]) => {
-        setTicket(ticketRes.data.data)
-        const msgs = msgRes.data.data
-        setMessages(Array.isArray(msgs) ? msgs : (msgs?.items ?? []))
-        const hist = histRes.data.data
-        setHistory(Array.isArray(hist) ? hist : (hist?.items ?? []))
-      })
-      .catch(() => setError('Failed to load ticket details'))
-      .finally(() => setFetching(false))
+    try {
+      const [ticketRes, msgRes, histRes] = await Promise.all([
+        ticketsApi.get(ticketId),
+        ticketsApi.getMessages(ticketId),
+        ticketsApi.getHistory(ticketId),
+      ])
+      const rawTicket = ticketRes.data.data
+      setTicket(rawTicket?.data ?? rawTicket)
+      const msgs = msgRes.data.data
+      const msgList = Array.isArray(msgs) ? msgs : (msgs?.items ?? msgs?.data ?? [])
+      setMessages(msgList)
+      const hist = histRes.data.data
+      setHistory(Array.isArray(hist) ? hist : (hist?.items ?? hist?.data ?? []))
+    } catch {
+      setError('Failed to load ticket details')
+    } finally {
+      setFetching(false)
+    }
   }, [isAuthenticated, ticketId])
+
+  useEffect(() => { fetchTicket() }, [fetchTicket])
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -104,13 +126,38 @@ export default function TicketDetailPage() {
     setSending(true)
     try {
       const res = await ticketsApi.addMessage(ticketId, reply.trim())
-      setMessages((prev) => [...prev, res.data.data])
+      const raw = res.data.data
+      const newMsg = raw?.data ?? raw
+      setMessages((prev) => [...prev, newMsg])
       setReply('')
     } catch {
       setError('Failed to send message')
     } finally {
       setSending(false)
     }
+  }
+
+  const handleStartCall = async () => {
+    if (!ticket?.assignee?.id) return
+    setCallError('')
+    try {
+      const res = await callsApi.start(ticket.assignee.id, ticketId, ticket.agency?.id)
+      const log = res.data.data
+      setCallLogId(log?.id ?? log?.data?.id ?? null)
+      await startCall(ticket.assignee.id)
+    } catch {
+      setCallError('Could not start call. Please try again.')
+    }
+  }
+
+  const handleEndCall = async () => {
+    endCall()
+    if (callLogId) {
+      const dur = callStartedAt ? Math.round((Date.now() - callStartedAt.getTime()) / 1000) : 0
+      await callsApi.updateStatus(callLogId, 'ENDED', dur).catch(() => {})
+    }
+    setCallLogId(null)
+    setCallStartedAt(null)
   }
 
   if (loading || !isAuthenticated) return null
@@ -145,9 +192,16 @@ export default function TicketDetailPage() {
   const priorityLabel = statusStr(ticket.priority)
   const tags = ticket.tagMappings?.map((m) => m.tag?.name).filter(Boolean) ?? []
   const slaStatus = ticket.slaTracking?.slaStatus
+  const isActive = ['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED'].includes(statusLabel)
+  const canCall = isActive && !!ticket.assignee?.id
+  const isOnCall = callStatus === 'calling' || callStatus === 'ringing' || callStatus === 'connected'
 
   return (
     <CitizenLayout>
+      {/* Hidden audio elements for WebRTC */}
+      <audio ref={localAudioRef} autoPlay muted />
+      <audio ref={remoteAudioRef} autoPlay />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         {/* Breadcrumb */}
@@ -161,40 +215,74 @@ export default function TicketDetailPage() {
         </nav>
 
         {/* Ticket header */}
-        <div className="mb-6">
-          <div className="flex flex-wrap items-center gap-2 mb-2">
-            <span className="font-mono text-sm font-semibold text-primary">{ticket.ticketNumber}</span>
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusLabel)}`}>
-              {statusLabel.replace('_', ' ')}
-            </span>
-            <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityBadge[priorityLabel] ?? ''}`}>
-              {priorityLabel}
-            </span>
+        <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+              <span className="font-mono text-sm font-semibold text-primary">{ticket.ticketNumber}</span>
+              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusLabel)}`}>
+                {statusLabel.replace('_', ' ')}
+              </span>
+              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityBadge[priorityLabel] ?? ''}`}>
+                {priorityLabel}
+              </span>
+            </div>
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground">{ticket.subject}</h1>
+            <p className="text-sm text-muted-foreground mt-1">Submitted {formatDateTime(ticket.createdAt)}</p>
           </div>
-          <h1 className="text-xl sm:text-2xl font-bold text-foreground">{ticket.subject}</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Submitted {formatDateTime(ticket.createdAt)}
-          </p>
+
+          {/* Call button */}
+          <div className="flex flex-col items-end gap-2">
+            {isOnCall ? (
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 rounded-full bg-green-100 dark:bg-green-900/30 px-3 py-1.5 text-xs font-medium text-green-700 dark:text-green-400">
+                  <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+                  {callStatus === 'connected' ? 'On call' : callStatus === 'calling' ? 'Calling…' : 'Incoming…'}
+                </div>
+                <button
+                  onClick={toggleMute}
+                  className="flex items-center justify-center rounded-full border border-border bg-card p-2 text-muted-foreground hover:bg-muted transition-colors"
+                  title={isMuted ? 'Unmute' : 'Mute'}
+                >
+                  {isMuted ? <MicOff className="h-4 w-4 text-destructive" /> : <Mic className="h-4 w-4" />}
+                </button>
+                <button
+                  onClick={handleEndCall}
+                  className="flex items-center gap-1.5 rounded-full bg-red-600 px-4 py-2 text-xs font-semibold text-white hover:bg-red-700 transition-colors"
+                >
+                  <PhoneOff className="h-4 w-4" /> End Call
+                </button>
+              </div>
+            ) : canCall ? (
+              <button
+                onClick={handleStartCall}
+                className="flex items-center gap-2 rounded-full border-2 border-green-600 bg-transparent px-4 py-2 text-sm font-semibold text-green-700 dark:text-green-400 hover:bg-green-600 hover:text-white transition-all"
+              >
+                <Phone className="h-4 w-4" />
+                Call Agent
+              </button>
+            ) : (
+              <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <PhoneMissed className="h-4 w-4" />
+                {isActive ? 'Awaiting agent assignment' : 'Call unavailable'}
+              </div>
+            )}
+            {callError && <p className="text-xs text-destructive">{callError}</p>}
+          </div>
         </div>
 
         {/* Main grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-          {/* Left: Description + Messages + Reply */}
+          {/* Left: Description + Messages */}
           <div className="lg:col-span-2 space-y-6">
 
-            {/* Description */}
             <div className="rounded-xl border border-border bg-card p-6">
               <h2 className="text-sm font-semibold text-foreground mb-3">Description</h2>
-              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">
-                {ticket.description}
-              </p>
+              <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{ticket.description}</p>
               {tags.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
                   {tags.map((tag) => (
-                    <span key={tag} className="rounded-full bg-muted text-muted-foreground text-xs px-2.5 py-0.5">
-                      #{tag}
-                    </span>
+                    <span key={tag} className="rounded-full bg-muted text-muted-foreground text-xs px-2.5 py-0.5">#{tag}</span>
                   ))}
                 </div>
               )}
@@ -202,34 +290,28 @@ export default function TicketDetailPage() {
 
             {/* Messages thread */}
             <div className="rounded-xl border border-border bg-card overflow-hidden">
-              <div className="px-6 py-4 border-b border-border">
+              <div className="px-6 py-4 border-b border-border flex items-center justify-between">
                 <h2 className="text-sm font-semibold text-foreground">Messages</h2>
+                <Volume2 className="h-4 w-4 text-muted-foreground" />
               </div>
 
               <div className="p-4 max-h-[500px] overflow-y-auto space-y-4">
                 {messages.length === 0 ? (
-                  <p className="text-center text-sm text-muted-foreground py-8">
-                    No messages yet. Send a message below.
-                  </p>
+                  <p className="text-center text-sm text-muted-foreground py-8">No messages yet. Send a message below.</p>
                 ) : (
                   messages.map((msg) => {
-                    const isCitizen = msg.sender.id === user?.id || msg.sender.role === 'CITIZEN'
+                    const isCitizen = msg.sender?.id === (user as any)?.id || msg.sender?.role === 'CITIZEN'
                     return (
-                      <div
-                        key={msg.id}
-                        className={`flex gap-3 ${isCitizen ? 'flex-row-reverse' : 'flex-row'}`}
-                      >
-                        {/* Avatar */}
+                      <div key={msg.id} className={`flex gap-3 ${isCitizen ? 'flex-row-reverse' : 'flex-row'}`}>
                         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${isCitizen ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
-                          {getInitials(msg.sender.firstName, msg.sender.lastName)}
+                          {getInitials(msg.sender?.firstName ?? '?', msg.sender?.lastName ?? '')}
                         </div>
-                        {/* Bubble */}
-                        <div className={`max-w-[75%] ${isCitizen ? 'items-end' : 'items-start'} flex flex-col gap-1`}>
+                        <div className={`max-w-[75%] flex flex-col gap-1 ${isCitizen ? 'items-end' : 'items-start'}`}>
                           <div className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${isCitizen ? 'bg-primary text-primary-foreground rounded-tr-sm' : 'bg-muted text-foreground rounded-tl-sm'}`}>
                             {msg.content}
                           </div>
                           <span className="text-xs text-muted-foreground px-1">
-                            {msg.sender.firstName} · {timeAgo(msg.createdAt)}
+                            {msg.sender?.firstName} · {timeAgo(msg.createdAt)}
                           </span>
                         </div>
                       </div>
@@ -239,17 +321,17 @@ export default function TicketDetailPage() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Reply box */}
-              {['OPEN', 'ASSIGNED', 'IN_PROGRESS', 'ESCALATED'].includes(statusLabel) && (
+              {isActive && (
                 <div className="border-t border-border p-4">
+                  {error && (
+                    <p className="text-xs text-destructive mb-2">{error}</p>
+                  )}
                   <div className="flex gap-2">
                     <textarea
                       rows={2}
                       value={reply}
                       onChange={(e) => setReply(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleSend()
-                      }}
+                      onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleSend() }}
                       placeholder="Type a message… (Ctrl+Enter to send)"
                       className="flex-1 resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[60px]"
                     />
@@ -269,7 +351,6 @@ export default function TicketDetailPage() {
           {/* Right sidebar */}
           <div className="space-y-4">
 
-            {/* Status card */}
             <div className="rounded-xl border border-border bg-card p-5">
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Status</h3>
               <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(statusLabel)}`}>
@@ -291,10 +372,9 @@ export default function TicketDetailPage() {
               </div>
             </div>
 
-            {/* Assignment card */}
             <div className="rounded-xl border border-border bg-card p-5">
               <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Assignment</h3>
-              <div className="space-y-2 text-sm">
+              <div className="space-y-3 text-sm">
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">Agency</p>
                   <p className="font-medium text-foreground">{ticket.agency?.agencyName ?? 'Not assigned'}</p>
@@ -318,7 +398,6 @@ export default function TicketDetailPage() {
               </div>
             </div>
 
-            {/* SLA card */}
             {(ticket.slaResponseDueAt || ticket.slaResolutionDueAt) && (
               <div className="rounded-xl border border-border bg-card p-5">
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">SLA</h3>
@@ -347,12 +426,10 @@ export default function TicketDetailPage() {
               </div>
             )}
 
-            {/* Your Contact Details on file */}
             {user && (
               <div className="rounded-xl border border-border bg-card p-5">
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
-                  <User className="h-3.5 w-3.5" />
-                  Your Contact Details
+                  <User className="h-3.5 w-3.5" /> Your Contact Details
                 </h3>
                 <div className="space-y-2 text-sm">
                   {([
@@ -370,7 +447,6 @@ export default function TicketDetailPage() {
               </div>
             )}
 
-            {/* History timeline */}
             {history.length > 0 && (
               <div className="rounded-xl border border-border bg-card p-5">
                 <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">History</h3>
@@ -379,9 +455,7 @@ export default function TicketDetailPage() {
                     <div key={entry.id} className="flex gap-3">
                       <div className="flex flex-col items-center">
                         <div className="h-2 w-2 rounded-full bg-primary mt-1.5" />
-                        {idx < history.length - 1 && (
-                          <div className="flex-1 w-px bg-border mt-1" />
-                        )}
+                        {idx < history.length - 1 && <div className="flex-1 w-px bg-border mt-1" />}
                       </div>
                       <div className="pb-3">
                         <p className="text-xs font-medium text-foreground">

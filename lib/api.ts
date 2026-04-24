@@ -186,6 +186,15 @@ export const contactApi = {
     api.post('/contact', data),
 }
 
+// ─── Calls ────────────────────────────────────────────────────────────────────
+export const callsApi = {
+  start: (targetUserId: string, ticketId?: string, agencyId?: string) =>
+    api.post('/calls/start', { targetUserId, ticketId, agencyId, direction: 'OUTBOUND' }),
+  updateStatus: (id: string, status: string, durationSec?: number) =>
+    api.patch(`/calls/${id}/status`, { status, durationSec }),
+  forTicket: (ticketId: string) => api.get(`/calls/ticket/${ticketId}`),
+}
+
 // ─── Health ───────────────────────────────────────────────────────────────────
 export const healthApi = {
   status: () => api.get('/health'),
