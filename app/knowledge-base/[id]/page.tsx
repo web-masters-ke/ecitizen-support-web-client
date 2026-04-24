@@ -17,7 +17,8 @@ import { kbApi } from '@/lib/api'
 import { formatDate } from '@/lib/utils'
 
 // Strip script tags, event handlers, and javascript: hrefs to prevent XSS
-function sanitizeHtml(html: string): string {
+function sanitizeHtml(html: string | null | undefined): string {
+  if (!html) return ''
   return html
     .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     .replace(/<\s*\/?\s*script[^>]*>/gi, '')
@@ -56,7 +57,8 @@ export default function KBArticlePage() {
     kbApi
       .article(articleId)
       .then((res) => {
-        const art = res.data.data
+        const raw = res.data.data
+        const art: KBArticle = raw?.data ?? raw
         setArticle(art)
         // Fetch related articles in same category
         if (art.category?.id) {
