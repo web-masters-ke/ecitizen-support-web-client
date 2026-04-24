@@ -1,34 +1,17 @@
 import Link from 'next/link'
-import { Shield, Phone, Mail, MapPin, Globe } from 'lucide-react'
+import { Shield, Phone, Mail, MapPin } from 'lucide-react'
 
-const popularServices = [
-  { href: '/tickets/new', label: 'National ID Application' },
-  { href: '/tickets/new', label: 'Passport Application' },
-  { href: '/tickets/new', label: 'Driving Licence' },
-  { href: '/tickets/new', label: 'Business Registration' },
-  { href: '/tickets/new', label: 'KRA PIN' },
-  { href: '/tickets/new', label: 'NHIF Registration' },
-  { href: '/tickets/new', label: 'Police Clearance' },
-  { href: '/tickets/new', label: 'Birth Certificate' },
-]
-
-const keyAgencies = [
-  { href: '/tickets/new', label: 'NTSA' },
-  { href: '/tickets/new', label: 'KRA' },
-  { href: '/tickets/new', label: 'NHIF' },
-  { href: '/tickets/new', label: 'NSSF' },
-  { href: '/tickets/new', label: 'Immigration Dept' },
-  { href: '/tickets/new', label: 'KNEC' },
-  { href: '/tickets/new', label: 'HELB' },
-  { href: '/tickets/new', label: 'DCI' },
-]
-
-const quickLinks = [
-  { href: '/about', label: 'About eCitizen' },
-  { href: '/services', label: 'All Services' },
+const supportLinks = [
+  { href: '/tickets/new', label: 'Submit a Request' },
+  { href: '/track', label: 'Track My Ticket' },
   { href: '/knowledge-base', label: 'Help Centre' },
-  { href: '/track', label: 'Track My Request' },
   { href: '/contact', label: 'Contact Us' },
+]
+
+const platformLinks = [
+  { href: '/about', label: 'About the Command Centre' },
+  { href: '/dashboard', label: 'My Dashboard' },
+  { href: '/tickets', label: 'My Tickets' },
 ]
 
 const legalLinks = [
@@ -41,7 +24,7 @@ export function Footer() {
   return (
     <footer className="border-t border-border bg-muted/40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-14">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
 
           {/* Brand — takes 2 columns */}
           <div className="lg:col-span-2 space-y-4">
@@ -50,15 +33,16 @@ export function Footer() {
                 <Shield className="h-5 w-5" />
               </div>
               <div className="leading-tight">
-                <p className="font-bold text-base text-primary">eCitizen Kenya</p>
+                <p className="font-bold text-base text-primary">eCitizen Command Centre</p>
                 <p className="text-[10px] text-muted-foreground leading-none">
-                  Official Government Service Portal
+                  Supporting Kenya&apos;s Digital Service Delivery
                 </p>
               </div>
             </div>
             <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
-              The Government of Kenya&apos;s official digital services portal — serving over 14
-              million Kenyans across all 47 counties and 50+ national agencies.
+              The eCitizen Command Centre is the Government of Kenya&apos;s official support
+              and oversight platform for eCitizen digital services — serving citizens
+              across all 47 counties.
             </p>
 
             {/* Contact info */}
@@ -84,11 +68,11 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Popular Services */}
+          {/* Support */}
           <div>
-            <h3 className="text-sm font-semibold text-foreground mb-4">Popular Services</h3>
+            <h3 className="text-sm font-semibold text-foreground mb-4">Support</h3>
             <ul className="space-y-2.5">
-              {popularServices.map((link) => (
+              {supportLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
@@ -101,29 +85,12 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Key Agencies */}
-          <div>
-            <h3 className="text-sm font-semibold text-foreground mb-4">Key Agencies</h3>
-            <ul className="space-y-2.5">
-              {keyAgencies.map((link) => (
-                <li key={link.label}>
-                  <Link
-                    href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary transition-colors"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Quick Links + Legal */}
+          {/* Platform + Legal */}
           <div className="space-y-7">
             <div>
-              <h3 className="text-sm font-semibold text-foreground mb-4">Quick Links</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-4">Platform</h3>
               <ul className="space-y-2.5">
-                {quickLinks.map((link) => (
+                {platformLinks.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
@@ -159,16 +126,12 @@ export function Footer() {
           <div className="flex items-center gap-3">
             <span className="text-2xl">🇰🇪</span>
             <p className="text-xs text-muted-foreground">
-              &copy; 2026 Republic of Kenya &mdash; eCitizen Service Command Centre. All rights
-              reserved.
+              &copy; {new Date().getFullYear()} Republic of Kenya &mdash; eCitizen Service Command Centre. All rights reserved.
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Globe className="h-3.5 w-3.5 text-muted-foreground" />
-            <p className="text-xs text-muted-foreground">
-              Regulated by the ICT Authority of Kenya
-            </p>
-          </div>
+          <p className="text-xs text-muted-foreground">
+            Data Protection Act 2019 Compliant
+          </p>
         </div>
       </div>
     </footer>

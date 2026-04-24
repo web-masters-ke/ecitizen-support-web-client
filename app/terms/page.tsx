@@ -241,7 +241,7 @@ export default function TermsOfServicePage() {
             <div className="mt-4 space-y-3">
               {[
                 { title: 'Agency Processing Delays', desc: 'eCitizen is a technology platform. We are not responsible for delays by individual government agencies in processing service applications or issuing documents. Processing timelines are determined by each agency.' },
-                { title: 'Service Availability', desc: 'The Platform is provided on a best-effort basis. We strive for 99.9% uptime but do not warrant uninterrupted or error-free availability. Scheduled maintenance will be announced in advance.' },
+                { title: 'Service Availability', desc: 'The Platform is provided on a best-effort basis. We strive for high availability but do not warrant uninterrupted or error-free availability. Scheduled maintenance will be announced in advance.' },
                 { title: 'Third-Party Failures', desc: 'We are not liable for failures or interruptions in third-party services such as telecommunications networks, M-PESA, or other payment providers that may affect your ability to access services.' },
                 { title: 'Consequential Losses', desc: 'We shall not be liable for any indirect, incidental, special, or consequential losses arising from your use of or inability to use the Platform, including loss of data or business opportunities.' },
               ].map((item) => (
@@ -309,7 +309,7 @@ export default function TermsOfServicePage() {
             </p>
             <div className="mt-4 rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-6 space-y-2 text-sm">
               <p className="font-semibold text-foreground text-base">Legal Services</p>
-              <p className="text-muted-foreground">ICT Authority of Kenya</p>
+              <p className="text-muted-foreground">eCitizen Support Command Centre</p>
               <p className="text-muted-foreground">Telposta Towers, Kenyatta Avenue</p>
               <p className="text-muted-foreground">P.O. Box 27150 — 00100, Nairobi, Kenya</p>
               <div className="pt-2 border-t border-green-200 dark:border-green-800 space-y-1">

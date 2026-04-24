@@ -385,7 +385,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <div className="mt-4 rounded-xl border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20 p-6 space-y-2 text-sm">
               <p className="font-semibold text-foreground text-base">Data Protection Officer</p>
-              <p className="text-muted-foreground">ICT Authority of Kenya</p>
+              <p className="text-muted-foreground">eCitizen Support Command Centre</p>
               <p className="text-muted-foreground">Telposta Towers, Kenyatta Avenue</p>
               <p className="text-muted-foreground">P.O. Box 27150 — 00100, Nairobi, Kenya</p>
               <div className="pt-2 border-t border-green-200 dark:border-green-800 space-y-1">

@@ -48,7 +48,7 @@ function LoginForm() {
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <Shield className="h-4 w-4" />
           </div>
-          <span className="text-sm font-bold">eCitizen Kenya</span>
+          <span className="text-sm font-bold">eCitizen Command Centre</span>
         </Link>
         <ThemeToggle />
       </div>
@@ -63,7 +63,7 @@ function LoginForm() {
                 <Shield className="h-7 w-7 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Sign in to your eCitizen account</p>
+              <p className="mt-1 text-sm text-muted-foreground">Sign in to your Command Centre account</p>
             </div>
 
             {/* Offline banner */}

@@ -22,7 +22,7 @@ const stats = [
   { label: 'Registered Citizens', value: '14M+' },
   { label: 'Services Available', value: '5,000+' },
   { label: 'Counties Served', value: '47' },
-  { label: 'Platform Uptime', value: '99.9%' },
+  { label: 'Support Channels', value: '5+' },
 ]
 
 const timeline = [
@@ -359,11 +359,11 @@ export default function AboutPage() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 dark:bg-green-900/30">
                   <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
-                <h3 className="font-semibold text-foreground">ICT Authority of Kenya</h3>
+                <h3 className="font-semibold text-foreground">State Department for ICT</h3>
               </div>
               <p className="text-sm text-muted-foreground leading-relaxed">
                 In partnership with the{' '}
-                <span className="font-medium text-foreground">ICT Authority of Kenya</span>, the
+                <span className="font-medium text-foreground">State Department for ICT and Digital Economy</span>, the
                 platform is technically managed, maintained, and continuously improved to meet the
                 evolving needs of Kenyan citizens and government agencies.
               </p>

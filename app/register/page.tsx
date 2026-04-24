@@ -32,9 +32,18 @@ export default function RegisterPage() {
     email: '',
     phone: '',
     nationalId: '',
+    accountType: 'CITIZEN',
     password: '',
     confirmPassword: '',
   })
+
+  const ACCOUNT_TYPES = [
+    { value: 'CITIZEN', label: 'Citizen' },
+    { value: 'ORGANIZATION', label: 'Organization' },
+    { value: 'FOREIGNER', label: 'Foreigner' },
+    { value: 'RESIDENT', label: 'Resident' },
+    { value: 'REFUGEE', label: 'Refugee' },
+  ]
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
   const [agreed, setAgreed] = useState(false)
@@ -89,6 +98,7 @@ export default function RegisterPage() {
         email: form.email,
         phoneNumber,
         nationalId: form.nationalId.trim() || undefined,
+        accountType: form.accountType,
         password: form.password,
       })
       setSuccess(true)
@@ -135,7 +145,7 @@ export default function RegisterPage() {
           <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
             <Shield className="h-4 w-4" />
           </div>
-          <span className="text-sm font-bold">eCitizen Kenya</span>
+          <span className="text-sm font-bold">eCitizen Command Centre</span>
         </Link>
         <ThemeToggle />
       </div>
@@ -149,7 +159,7 @@ export default function RegisterPage() {
                 <Shield className="h-7 w-7 text-primary" />
               </div>
               <h1 className="text-2xl font-bold text-foreground">Create Your Account</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Join thousands of Kenyans accessing government services online</p>
+              <p className="mt-1 text-sm text-muted-foreground">Create your Command Centre account to submit and track support tickets</p>
             </div>
 
             {/* Offline banner */}
@@ -246,6 +256,24 @@ export default function RegisterPage() {
                   placeholder="e.g. 12345678"
                   className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
+              </div>
+
+              {/* Account Type */}
+              <div>
+                <label htmlFor="accountType" className="block text-sm font-medium text-foreground mb-1.5">
+                  Account Type <span className="text-destructive">*</span>
+                </label>
+                <select
+                  id="accountType"
+                  name="accountType"
+                  value={form.accountType}
+                  onChange={(e) => setForm((prev) => ({ ...prev, accountType: e.target.value }))}
+                  className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
+                  {ACCOUNT_TYPES.map(({ value, label }) => (
+                    <option key={value} value={value}>{label}</option>
+                  ))}
+                </select>
               </div>
 
               {/* Password */}

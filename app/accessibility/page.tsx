@@ -373,7 +373,7 @@ export default function AccessibilityPage() {
               complaint to:
             </p>
             <div className="mt-4 rounded-xl border border-border bg-card p-6 space-y-2 text-sm">
-              <p className="font-semibold text-foreground text-base">ICT Authority of Kenya</p>
+              <p className="font-semibold text-foreground text-base">Ministry of Information, Communications and the Digital Economy</p>
               <p className="text-muted-foreground">Attn: Digital Accessibility Compliance</p>
               <p className="text-muted-foreground">Telposta Towers, Kenyatta Avenue</p>
               <p className="text-muted-foreground">P.O. Box 27150 — 00100, Nairobi, Kenya</p>
