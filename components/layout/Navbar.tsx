@@ -1,9 +1,9 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  Shield,
   Bell,
   Menu,
   X,
@@ -71,9 +71,14 @@ export function Navbar() {
             className="flex items-center gap-2 select-none"
             aria-label="eCitizen Service Command Centre"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Shield className="h-5 w-5" />
-            </div>
+            <Image
+              src="/kenya-coat-of-arms.svg"
+              alt="Kenya Coat of Arms"
+              width={36}
+              height={36}
+              className="h-9 w-9 object-contain"
+              priority
+            />
             <div className="hidden sm:block leading-tight">
               <p className="font-bold text-sm text-primary">eCitizen</p>
               <p className="text-[10px] text-muted-foreground leading-none">

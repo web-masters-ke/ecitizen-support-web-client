@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ArrowLeft, Loader2, AlertCircle, CheckCircle2, FileText } from 'lucide-react'
@@ -23,7 +23,7 @@ interface Priority {
   severityScore: number
 }
 
-export default function NewTicketPage() {
+function NewTicketContent() {
   const { isAuthenticated, loading, user } = useAuth()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -180,6 +180,7 @@ export default function NewTicketPage() {
 
   return (
     <CitizenLayout>
+
       <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 space-y-6">
 
         {/* Header */}
@@ -362,5 +363,13 @@ export default function NewTicketPage() {
         </div>
       </div>
     </CitizenLayout>
+  )
+}
+
+export default function NewTicketPage() {
+  return (
+    <Suspense>
+      <NewTicketContent />
+    </Suspense>
   )
 }
