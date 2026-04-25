@@ -205,9 +205,7 @@ export const meetingsApi = {
 // ─── Media ────────────────────────────────────────────────────────────────────
 export const mediaApi = {
   upload: (formData: FormData) =>
-    api.post('/media/upload', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }),
+    api.post('/media/upload', formData),
 }
 
 // ─── Health ───────────────────────────────────────────────────────────────────
