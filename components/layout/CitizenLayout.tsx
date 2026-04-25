@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Navbar } from './Navbar'
 import { Footer } from './Footer'
+import { CitizenCallWidget } from '@/components/calls/CitizenCallWidget'
 
 interface CitizenLayoutProps {
   children: ReactNode
@@ -16,6 +17,7 @@ export function CitizenLayout({ children }: CitizenLayoutProps) {
         </div>
       </main>
       <Footer />
+      <CitizenCallWidget />
     </div>
   )
 }
