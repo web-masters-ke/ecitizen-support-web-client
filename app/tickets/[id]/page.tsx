@@ -6,6 +6,7 @@ import {
   ArrowLeft, Loader2, Send, AlertCircle, Clock, User,
   Phone, PhoneOff, PhoneMissed, MicOff, Mic, Volume2,
 } from 'lucide-react'
+import { io } from 'socket.io-client'
 import { useAuth } from '@/contexts/AuthContext'
 import { CitizenLayout } from '@/components/layout/CitizenLayout'
 import { ticketsApi, callsApi } from '@/lib/api'
@@ -33,8 +34,9 @@ interface TicketDetail {
 
 interface Message {
   id: string
-  content: string
-  sender: { id: string; firstName: string; lastName: string; role: string }
+  messageText: string
+  senderId?: string
+  sender: { id: string; firstName: string; lastName: string; email?: string; userType?: string }
   createdAt: string
   isInternal?: boolean
 }
@@ -68,6 +70,7 @@ export default function TicketDetailPage() {
   const [reply, setReply] = useState('')
   const [sending, setSending] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   // ── Call state ─────────────────────────────────────────────────────────────
   const [callLogId, setCallLogId] = useState<string | null>(null)
@@ -117,8 +120,27 @@ export default function TicketDetailPage() {
 
   useEffect(() => { fetchTicket() }, [fetchTicket])
 
+  // Real-time: listen for new messages from agent via WebSocket
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+    if (!isAuthenticated || !ticketId) return
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL?.replace('/api/v1', '') || ''
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null
+    if (!token) return
+    const socket = io(`${baseUrl}/ws`, { auth: { token }, transports: ['websocket', 'polling'] })
+    socket.on('ticket:newMessage', (data: { ticketId: string; message: Message }) => {
+      if (data.ticketId === ticketId) {
+        setMessages((prev) => {
+          if (prev.find((m) => m.id === data.message.id)) return prev
+          return [...prev, data.message]
+        })
+      }
+    })
+    return () => { socket.disconnect() }
+  }, [isAuthenticated, ticketId])
+
+  useEffect(() => {
+    const el = messagesContainerRef.current
+    if (el) el.scrollTop = el.scrollHeight
   }, [messages])
 
   const handleSend = async () => {
@@ -300,20 +322,20 @@ export default function TicketDetailPage() {
                 <Volume2 className="h-4 w-4 text-muted-foreground" />
               </div>
 
-              <div className="p-4 max-h-[500px] overflow-y-auto space-y-4">
+              <div ref={messagesContainerRef} className="p-4 max-h-[500px] overflow-y-auto space-y-4">
                 {messages.length === 0 ? (
                   <p className="text-center text-sm text-muted-foreground py-8">No messages yet. Send a message below.</p>
                 ) : (
                   messages.map((msg) => {
-                    const isCitizen = msg.sender?.id === (user as any)?.id || msg.sender?.role === 'CITIZEN'
+                    const isCitizen = msg.sender?.id === (user as any)?.id || msg.sender?.userType === 'CITIZEN' || msg.sender?.userType === 'BUSINESS'
                     return (
                       <div key={msg.id} className={`flex gap-3 ${isCitizen ? 'flex-row-reverse' : 'flex-row'}`}>
-                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${isCitizen ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                        <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${isCitizen ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>
                           {getInitials(msg.sender?.firstName ?? '?', msg.sender?.lastName ?? '')}
                         </div>
                         <div className={`max-w-[75%] flex flex-col gap-1 ${isCitizen ? 'items-end' : 'items-start'}`}>
                           <div className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${isCitizen ? 'bg-primary text-primary-foreground rounded-tr-sm' : 'bg-muted text-foreground rounded-tl-sm'}`}>
-                            {msg.content}
+                            {msg.messageText}
                           </div>
                           <span className="text-xs text-muted-foreground px-1">
                             {msg.sender?.firstName} · {timeAgo(msg.createdAt)}
