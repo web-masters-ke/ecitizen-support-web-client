@@ -4,12 +4,12 @@ import Link from 'next/link'
 import { useRouter, useParams } from 'next/navigation'
 import {
   ArrowLeft, Loader2, Send, AlertCircle, Clock, User,
-  Phone, PhoneOff, PhoneMissed, MicOff, Mic, Volume2,
+  Phone, PhoneOff, PhoneMissed, MicOff, Mic, Volume2, Paperclip, X,
 } from 'lucide-react'
 import { io } from 'socket.io-client'
 import { useAuth } from '@/contexts/AuthContext'
 import { CitizenLayout } from '@/components/layout/CitizenLayout'
-import { ticketsApi, callsApi } from '@/lib/api'
+import { ticketsApi, callsApi, mediaApi } from '@/lib/api'
 import { useWebRTCCall } from '@/hooks/useWebRTCCall'
 import { getStatusColor, formatDate, formatDateTime, timeAgo, getInitials, statusStr } from '@/lib/utils'
 
@@ -32,13 +32,21 @@ interface TicketDetail {
   tagMappings?: Array<{ tag?: { name: string } }>
 }
 
+interface MessageAttachment {
+  id: string
+  storageUrl: string
+  fileName?: string | null
+  fileType?: string | null
+}
+
 interface Message {
   id: string
-  messageText: string
+  messageText?: string | null
   senderId?: string
   sender: { id: string; firstName: string; lastName: string; email?: string; userType?: string }
   createdAt: string
   isInternal?: boolean
+  attachments?: MessageAttachment[]
 }
 
 interface HistoryEntry {
@@ -69,8 +77,14 @@ export default function TicketDetailPage() {
   const [error, setError] = useState('')
   const [reply, setReply] = useState('')
   const [sending, setSending] = useState(false)
+  const [uploadingFile, setUploadingFile] = useState(false)
+  const [pendingFile, setPendingFile] = useState<{ url: string; name: string; type: string } | null>(null)
+  const [recording, setRecording] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null)
+  const audioChunksRef = useRef<Blob[]>([])
 
   // ── Call state ─────────────────────────────────────────────────────────────
   const [callLogId, setCallLogId] = useState<string | null>(null)
@@ -144,18 +158,80 @@ export default function TicketDetailPage() {
   }, [messages])
 
   const handleSend = async () => {
-    if (!reply.trim() || sending) return
+    if ((!reply.trim() && !pendingFile) || sending) return
     setSending(true)
     try {
-      const res = await ticketsApi.addMessage(ticketId, reply.trim())
+      const res = await ticketsApi.addMessage(
+        ticketId,
+        reply.trim(),
+        pendingFile?.url,
+        pendingFile?.name,
+        pendingFile?.type,
+      )
       const raw = res.data.data
       const newMsg = raw?.data ?? raw
       setMessages((prev) => [...prev, newMsg])
       setReply('')
+      setPendingFile(null)
     } catch {
       setError('Failed to send message')
     } finally {
       setSending(false)
+    }
+  }
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadingFile(true)
+    try {
+      const fd = new FormData()
+      fd.append('file', file)
+      const res = await mediaApi.upload(fd)
+      const raw = res.data.data ?? res.data
+      const url = raw?.url ?? raw?.storageUrl ?? raw?.fileUrl ?? ''
+      setPendingFile({ url, name: file.name, type: file.type })
+    } catch {
+      setError('File upload failed')
+    } finally {
+      setUploadingFile(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleVoiceToggle = async () => {
+    if (recording) {
+      mediaRecorderRef.current?.stop()
+      setRecording(false)
+      return
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+      const mr = new MediaRecorder(stream)
+      audioChunksRef.current = []
+      mr.ondataavailable = (e) => audioChunksRef.current.push(e.data)
+      mr.onstop = async () => {
+        stream.getTracks().forEach((t) => t.stop())
+        const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
+        const fd = new FormData()
+        fd.append('file', blob, `voice-${Date.now()}.webm`)
+        setUploadingFile(true)
+        try {
+          const res = await mediaApi.upload(fd)
+          const raw = res.data.data ?? res.data
+          const url = raw?.url ?? raw?.storageUrl ?? raw?.fileUrl ?? ''
+          setPendingFile({ url, name: `Voice note ${new Date().toLocaleTimeString()}`, type: 'audio/webm' })
+        } catch {
+          setError('Voice upload failed')
+        } finally {
+          setUploadingFile(false)
+        }
+      }
+      mr.start()
+      mediaRecorderRef.current = mr
+      setRecording(true)
+    } catch {
+      setError('Microphone access denied')
     }
   }
 
@@ -335,7 +411,24 @@ export default function TicketDetailPage() {
                         </div>
                         <div className={`max-w-[75%] flex flex-col gap-1 ${isCitizen ? 'items-end' : 'items-start'}`}>
                           <div className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${isCitizen ? 'bg-primary text-primary-foreground rounded-tr-sm' : 'bg-muted text-foreground rounded-tl-sm'}`}>
-                            {msg.messageText}
+                            {msg.messageText && <p>{msg.messageText}</p>}
+                            {(msg.attachments ?? []).map((att) => {
+                              const isAudio = att.fileType?.startsWith('audio/')
+                              const isImage = att.fileType?.startsWith('image/')
+                              return (
+                                <div key={att.id} className="mt-1">
+                                  {isAudio ? (
+                                    <audio controls src={att.storageUrl} className="max-w-full" />
+                                  ) : isImage ? (
+                                    <img src={att.storageUrl} alt={att.fileName ?? 'image'} className="max-w-[220px] rounded-lg mt-1" />
+                                  ) : (
+                                    <a href={att.storageUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 underline text-xs opacity-90">
+                                      <Paperclip className="h-3 w-3" />{att.fileName ?? 'Attachment'}
+                                    </a>
+                                  )}
+                                </div>
+                              )
+                            })}
                           </div>
                           <span className="text-xs text-muted-foreground px-1">
                             {msg.sender?.firstName} · {timeAgo(msg.createdAt)}
@@ -350,22 +443,46 @@ export default function TicketDetailPage() {
 
               {isActive && (
                 <div className="border-t border-border p-4">
-                  {error && (
-                    <p className="text-xs text-destructive mb-2">{error}</p>
+                  {error && <p className="text-xs text-destructive mb-2">{error}</p>}
+                  {pendingFile && (
+                    <div className="flex items-center gap-2 mb-2 rounded-lg bg-primary/5 border border-primary/20 px-3 py-2 text-xs text-primary">
+                      <Paperclip className="h-3.5 w-3.5 shrink-0" />
+                      <span className="flex-1 truncate">{pendingFile.name}</span>
+                      <button onClick={() => setPendingFile(null)} className="text-muted-foreground hover:text-foreground"><X className="h-3.5 w-3.5" /></button>
+                    </div>
                   )}
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-end">
+                    <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploadingFile}
+                      className="shrink-0 h-10 w-10 rounded-xl border border-input flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+                      title="Attach file"
+                    >
+                      {uploadingFile ? <Loader2 className="h-4 w-4 animate-spin" /> : <Paperclip className="h-4 w-4" />}
+                    </button>
                     <textarea
                       rows={2}
                       value={reply}
                       onChange={(e) => setReply(e.target.value)}
-                      onKeyDown={(e) => { if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) handleSend() }}
-                      placeholder="Type your message…"
-                      className="flex-1 resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[60px]"
+                      onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend() } }}
+                      placeholder="Type your message… (Enter to send)"
+                      className="flex-1 resize-none rounded-xl border border-input bg-transparent px-3 py-2.5 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                     />
                     <button
+                      type="button"
+                      onClick={handleVoiceToggle}
+                      disabled={uploadingFile}
+                      className={`shrink-0 h-10 w-10 rounded-xl border flex items-center justify-center transition-colors disabled:opacity-50 ${recording ? 'border-red-500 bg-red-50 text-red-500 animate-pulse' : 'border-input text-muted-foreground hover:text-foreground hover:bg-muted'}`}
+                      title={recording ? 'Stop recording' : 'Record voice note'}
+                    >
+                      <Mic className="h-4 w-4" />
+                    </button>
+                    <button
                       onClick={handleSend}
-                      disabled={!reply.trim() || sending}
-                      className="self-end flex items-center justify-center rounded-md bg-primary p-2.5 text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                      disabled={(!reply.trim() && !pendingFile) || sending || uploadingFile}
+                      className="shrink-0 h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                     >
                       {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                     </button>

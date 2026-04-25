@@ -120,8 +120,8 @@ export const ticketsApi = {
 
   create: (data: Record<string, unknown>) => api.post('/tickets', data),
 
-  addMessage: (id: string, content: string) =>
-    api.post(`/tickets/${id}/messages`, { messageText: content }),
+  addMessage: (id: string, content: string, fileUrl?: string, fileName?: string, fileType?: string) =>
+    api.post(`/tickets/${id}/messages`, { messageText: content || undefined, fileUrl, fileName, fileType }),
 
   getMessages: (id: string) => api.get(`/tickets/${id}/messages`),
 
@@ -200,6 +200,14 @@ export const callsApi = {
 export const meetingsApi = {
   active: (ticketId: string) => api.get(`/meetings/ticket/${ticketId}/active`),
   forTicket: (ticketId: string) => api.get(`/meetings/ticket/${ticketId}`),
+}
+
+// ─── Media ────────────────────────────────────────────────────────────────────
+export const mediaApi = {
+  upload: (formData: FormData) =>
+    api.post('/media/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
 }
 
 // ─── Health ───────────────────────────────────────────────────────────────────
