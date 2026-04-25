@@ -212,19 +212,23 @@ export default function TicketDetailPage() {
             My Tickets
           </Link>
           <span>/</span>
-          <span className="font-mono text-foreground font-medium">{ticket.ticketNumber}</span>
+          <span className="font-mono text-foreground font-medium">{ticket.ticketNumber.replace(/-/g, ' ')}</span>
         </nav>
 
         {/* Ticket header */}
         <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
           <div>
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-              <span className="font-mono text-sm font-semibold text-primary">{ticket.ticketNumber}</span>
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusLabel)}`}>
-                {statusLabel.replace('_', ' ')}
+            <div className="flex flex-wrap items-center gap-3 mb-2">
+              <span className="font-mono text-sm font-semibold text-foreground tracking-wide">
+                {ticket.ticketNumber.replace(/-/g, ' ')}
               </span>
-              <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityBadge[priorityLabel] ?? ''}`}>
-                {priorityLabel}
+              <span className="text-muted-foreground">·</span>
+              <span className="text-sm font-medium text-foreground">
+                {statusLabel.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
+              </span>
+              <span className="text-muted-foreground">·</span>
+              <span className="text-sm font-medium text-foreground">
+                {priorityLabel.charAt(0).toUpperCase() + priorityLabel.slice(1).toLowerCase()}
               </span>
             </div>
             <h1 className="text-xl sm:text-2xl font-bold text-foreground">{ticket.subject}</h1>
@@ -353,9 +357,9 @@ export default function TicketDetailPage() {
           <div className="space-y-4">
 
             <div className="rounded-xl border border-border bg-card p-5">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Status</h3>
-              <span className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${getStatusColor(statusLabel)}`}>
-                {statusLabel.replace('_', ' ')}
+              <h3 className="text-sm font-semibold text-foreground mb-3">Status</h3>
+              <span className="text-sm font-medium text-foreground">
+                {statusLabel.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
               </span>
               <div className="mt-4 space-y-2 text-sm">
                 <div className="flex justify-between">
@@ -368,13 +372,13 @@ export default function TicketDetailPage() {
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Ticket #</span>
-                  <span className="font-mono text-xs text-primary">{ticket.ticketNumber}</span>
+                  <span className="font-mono text-xs text-primary">{ticket.ticketNumber.replace(/-/g, ' ')}</span>
                 </div>
               </div>
             </div>
 
             <div className="rounded-xl border border-border bg-card p-5">
-              <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Assignment</h3>
+              <h3 className="text-sm font-semibold text-foreground mb-3">Assignment</h3>
               <div className="space-y-3 text-sm">
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">Agency</p>
@@ -401,7 +405,7 @@ export default function TicketDetailPage() {
 
             {(ticket.slaResponseDueAt || ticket.slaResolutionDueAt) && (
               <div className="rounded-xl border border-border bg-card p-5">
-                <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">SLA</h3>
+                <h3 className="text-sm font-semibold text-foreground mb-3">SLA</h3>
                 <div className="space-y-2 text-sm">
                   {slaStatus && (
                     <div className="flex justify-between">

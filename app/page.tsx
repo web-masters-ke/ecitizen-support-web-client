@@ -112,20 +112,18 @@ export default function HomePage() {
       <Navbar />
 
       {/* ── Hero ────────────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#0f4023] via-[#1a6b3a] to-[#1e7d44] text-white">
-        {/* Subtle grid overlay */}
+      <section className="relative overflow-hidden text-white">
+        {/* Hero background — Nairobi skyline */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-[0.04]"
+          className="absolute inset-0"
           style={{
-            backgroundImage:
-              'linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)',
-            backgroundSize: '48px 48px',
+            backgroundImage: 'url(https://images.unsplash.com/photo-1611348524140-53c9a25263d6?auto=format&fit=crop&w=1920&q=85)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 40%',
           }}
         />
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className="absolute -top-32 -right-32 h-96 w-96 rounded-full bg-white/5 blur-3xl" />
-          <div className="absolute bottom-0 -left-20 h-64 w-64 rounded-full bg-white/5 blur-3xl" />
-        </div>
+        {/* Dark green overlay — keeps government feel + readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a2e1a]/90 via-[#0f4023]/85 to-[#1a6b3a]/80" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium mb-6 backdrop-blur-sm border border-white/15">
