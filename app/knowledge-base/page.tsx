@@ -77,24 +77,24 @@ export default function KnowledgeBasePage() {
   return (
     <PublicLayout>
       {/* Hero */}
-      <div className="bg-gradient-to-br from-[hsl(170,80%,18%)] via-[hsl(170,75%,24%)] to-[hsl(175,70%,30%)] text-white py-16">
+      <div className="bg-white border-b border-border py-14">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 mx-auto mb-4">
-            <BookOpen className="h-7 w-7" />
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 mx-auto mb-4">
+            <BookOpen className="h-7 w-7 text-primary" />
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold mb-3">Knowledge Base</h1>
-          <p className="text-white/80 text-lg mb-8">
+          <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">Knowledge Base</h1>
+          <p className="text-foreground text-lg mb-8">
             Find answers to your questions about government services in Kenya
           </p>
           {/* Search */}
           <div className="relative max-w-xl mx-auto">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/50" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <input
               type="text"
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1) }}
               placeholder="Search articles…"
-              className="w-full rounded-xl bg-white/10 border border-white/20 pl-12 pr-4 py-3 text-white placeholder:text-white/50 backdrop-blur focus:outline-none focus:ring-2 focus:ring-white/30 text-sm"
+              className="w-full rounded-xl bg-white border border-border pl-12 pr-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm shadow-sm"
             />
           </div>
         </div>
