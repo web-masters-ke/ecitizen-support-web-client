@@ -1,3 +1,7 @@
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
   Shield,
@@ -107,6 +111,14 @@ const faqs = [
 /* ─── Page ──────────────────────────────────────────────────────────────────── */
 
 export default function HomePage() {
+  const router = useRouter()
+
+  useEffect(() => {
+    if (typeof window !== 'undefined' && localStorage.getItem('accessToken')) {
+      router.replace('/dashboard')
+    }
+  }, [router])
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <Navbar />
