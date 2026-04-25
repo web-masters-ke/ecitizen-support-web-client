@@ -196,6 +196,12 @@ export const callsApi = {
   forTicket: (ticketId: string) => api.get(`/calls/ticket/${ticketId}`),
 }
 
+// ─── Meetings ─────────────────────────────────────────────────────────────────
+export const meetingsApi = {
+  active: (ticketId: string) => api.get(`/meetings/ticket/${ticketId}/active`),
+  forTicket: (ticketId: string) => api.get(`/meetings/ticket/${ticketId}`),
+}
+
 // ─── Health ───────────────────────────────────────────────────────────────────
 export const healthApi = {
   status: () => api.get('/health'),
