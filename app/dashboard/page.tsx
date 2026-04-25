@@ -91,7 +91,7 @@ export default function DashboardPage() {
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
               {getGreeting()}, {user?.firstName}! 👋
             </h1>
-            <p className="mt-1 text-foreground text-sm font-medium">
+            <p className="mt-1 text-foreground text-sm font-medium" suppressHydrationWarning>
               {new Date().toLocaleDateString('en-KE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>

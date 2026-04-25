@@ -70,7 +70,7 @@ export function Footer() {
         <div className="mt-8 border-t border-zinc-800 pt-5 flex flex-col sm:flex-row justify-between items-center gap-3">
           <div className="flex items-center gap-2">
             <span className="text-lg">🇰🇪</span>
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-zinc-500" suppressHydrationWarning>
               &copy; {new Date().getFullYear()} Republic of Kenya &mdash; eCitizen Service Command Centre
             </p>
           </div>

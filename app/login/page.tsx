@@ -159,7 +159,7 @@ function LoginForm() {
         </div>
       </div>
 
-      <p className="py-4 text-center text-xs text-muted-foreground">
+      <p className="py-4 text-center text-xs text-muted-foreground" suppressHydrationWarning>
         © {new Date().getFullYear()} Republic of Kenya. All rights reserved.
       </p>
     </div>
