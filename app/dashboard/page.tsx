@@ -91,7 +91,7 @@ export default function DashboardPage() {
             <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
               {getGreeting()}, {user?.firstName}! 👋
             </h1>
-            <p className="mt-1 text-muted-foreground text-sm">
+            <p className="mt-1 text-foreground text-sm font-medium">
               {new Date().toLocaleDateString('en-KE', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
             </p>
           </div>
@@ -112,7 +112,7 @@ export default function DashboardPage() {
                 <Icon className={`h-5 w-5 ${color}`} />
               </div>
               <p className="text-2xl font-bold text-foreground">{value}</p>
-              <p className="text-sm text-muted-foreground">{label}</p>
+              <p className="text-sm font-semibold text-foreground">{label}</p>
             </div>
           ))}
         </div>
@@ -162,32 +162,32 @@ export default function DashboardPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border bg-muted/40">
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Ticket #</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Subject</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden sm:table-cell">Agency</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden md:table-cell">Created</th>
-                    <th className="text-right px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Action</th>
+                    <th className="text-left px-6 py-3 text-xs font-bold text-foreground uppercase tracking-wider">Ticket #</th>
+                    <th className="text-left px-6 py-3 text-xs font-bold text-foreground uppercase tracking-wider">Subject</th>
+                    <th className="text-left px-6 py-3 text-xs font-bold text-foreground uppercase tracking-wider hidden sm:table-cell">Agency</th>
+                    <th className="text-left px-6 py-3 text-xs font-bold text-foreground uppercase tracking-wider">Status</th>
+                    <th className="text-left px-6 py-3 text-xs font-bold text-foreground uppercase tracking-wider hidden md:table-cell">Created</th>
+                    <th className="text-right px-6 py-3 text-xs font-bold text-foreground uppercase tracking-wider">Action</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
                   {tickets.map((ticket) => (
                     <tr key={ticket.id} className="hover:bg-muted/30 transition-colors">
-                      <td className="px-6 py-4 font-mono text-xs font-medium text-primary">
-                        {ticket.ticketNumber}
+                      <td className="px-6 py-4 font-mono text-xs font-semibold text-foreground">
+                        {ticket.ticketNumber.replace(/-/g, ' ')}
                       </td>
                       <td className="px-6 py-4 max-w-[200px] truncate text-foreground">
                         {ticket.subject}
                       </td>
-                      <td className="px-6 py-4 text-muted-foreground hidden sm:table-cell">
+                      <td className="px-6 py-4 text-foreground hidden sm:table-cell">
                         {ticket.agency?.agencyName ?? '—'}
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusStr(ticket.status))}`}>
-                          {statusStr(ticket.status).replace('_', ' ')}
+                        <span className="text-xs font-semibold text-foreground">
+                          {statusStr(ticket.status).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-muted-foreground hidden md:table-cell">
+                      <td className="px-6 py-4 text-foreground hidden md:table-cell">
                         {formatDate(ticket.createdAt)}
                       </td>
                       <td className="px-6 py-4 text-right">
@@ -246,7 +246,7 @@ export default function DashboardPage() {
                   <Icon className={`h-5 w-5 ${color}`} />
                 </div>
                 <h3 className="text-sm font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">{title}</h3>
-                <p className="text-xs text-muted-foreground leading-relaxed flex-1">{description}</p>
+                <p className="text-xs text-foreground leading-relaxed flex-1">{description}</p>
                 <div className="mt-3 flex items-center gap-1 text-xs font-medium text-primary">
                   Get started <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
                 </div>
