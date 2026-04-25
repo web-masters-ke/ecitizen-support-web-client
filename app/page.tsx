@@ -134,8 +134,8 @@ export default function HomePage() {
             backgroundPosition: 'center 40%',
           }}
         />
-        {/* Dark green overlay — keeps government feel + readability */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0a2e1a]/90 via-[#0f4023]/85 to-[#1a6b3a]/80" />
+        {/* Subtle bottom gradient for text readability — image stays clear */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium mb-6 backdrop-blur-sm border border-white/15">
