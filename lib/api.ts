@@ -91,6 +91,7 @@ export const authApi = {
     lastName: string
     phoneNumber?: string
     nationalId?: string
+    accountType?: string
   }) => api.post('/auth/register', data),
 
   login: (data: { email: string; password: string }) =>
