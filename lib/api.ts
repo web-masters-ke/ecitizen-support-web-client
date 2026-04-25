@@ -121,7 +121,7 @@ export const ticketsApi = {
   create: (data: Record<string, unknown>) => api.post('/tickets', data),
 
   addMessage: (id: string, content: string) =>
-    api.post(`/tickets/${id}/messages`, { content }),
+    api.post(`/tickets/${id}/messages`, { messageText: content }),
 
   getMessages: (id: string) => api.get(`/tickets/${id}/messages`),
 
