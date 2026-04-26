@@ -411,7 +411,7 @@ export default function TicketDetailPage() {
                         </div>
                         <div className={`max-w-[75%] flex flex-col gap-1.5 ${isCitizen ? 'items-end' : 'items-start'}`}>
                           {msg.messageText && (
-                            <div className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${isCitizen ? 'bg-primary text-primary-foreground rounded-tr-sm' : 'bg-muted text-foreground rounded-tl-sm'}`}>
+                            <div className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${isCitizen ? 'bg-primary/15 text-foreground rounded-tr-sm dark:bg-primary/20' : 'bg-muted text-foreground rounded-tl-sm'}`}>
                               <p>{msg.messageText}</p>
                             </div>
                           )}
