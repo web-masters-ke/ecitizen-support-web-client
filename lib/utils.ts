@@ -79,3 +79,13 @@ export function truncate(str: string, maxLen: number): string {
   if (str.length <= maxLen) return str
   return str.slice(0, maxLen) + '...'
 }
+
+// Rewrite localhost media URLs to the real API host so audio/files load in production
+export function normalizeMediaUrl(url: string | null | undefined): string | undefined {
+  if (!url) return undefined;
+  if (url.startsWith('http://localhost') || url.startsWith('http://127.0.0.1')) {
+    const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? '').replace('/api/v1', '');
+    if (apiBase) return url.replace(/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?/, apiBase);
+  }
+  return url;
+}

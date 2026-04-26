@@ -11,7 +11,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { CitizenLayout } from '@/components/layout/CitizenLayout'
 import { ticketsApi, callsApi, mediaApi } from '@/lib/api'
 import { useWebRTCCall } from '@/hooks/useWebRTCCall'
-import { getStatusColor, formatDate, formatDateTime, timeAgo, getInitials, statusStr } from '@/lib/utils'
+import { getStatusColor, formatDate, formatDateTime, timeAgo, getInitials, statusStr, normalizeMediaUrl } from '@/lib/utils'
 
 interface TicketDetail {
   id: string
@@ -189,7 +189,7 @@ export default function TicketDetailPage() {
       fd.append('file', file)
       const res = await mediaApi.upload(fd)
       const raw = res.data.data ?? res.data
-      const url = raw?.url ?? raw?.storageUrl ?? raw?.fileUrl ?? ''
+      const url = raw?.storageUrl ?? raw?.url ?? raw?.fileUrl ?? ''
       setPendingFile({ url, name: file.name, type: file.type })
     } catch {
       setError('File upload failed')
@@ -219,7 +219,7 @@ export default function TicketDetailPage() {
         try {
           const res = await mediaApi.upload(fd)
           const raw = res.data.data ?? res.data
-          const url = raw?.url ?? raw?.storageUrl ?? raw?.fileUrl ?? ''
+          const url = raw?.storageUrl ?? raw?.url ?? raw?.fileUrl ?? ''
           setPendingFile({ url, name: `Voice note ${new Date().toLocaleTimeString()}`, type: 'audio/webm' })
         } catch {
           setError('Voice upload failed')
@@ -418,11 +418,11 @@ export default function TicketDetailPage() {
                               return (
                                 <div key={att.id} className="mt-1">
                                   {isAudio ? (
-                                    <audio controls src={att.storageUrl} className="max-w-full" />
+                                    <audio controls src={normalizeMediaUrl(att.storageUrl)} className="max-w-full" />
                                   ) : isImage ? (
-                                    <img src={att.storageUrl} alt={att.fileName ?? 'image'} className="max-w-[220px] rounded-lg mt-1" />
+                                    <img src={normalizeMediaUrl(att.storageUrl)} alt={att.fileName ?? 'image'} className="max-w-[220px] rounded-lg mt-1" />
                                   ) : (
-                                    <a href={att.storageUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 underline text-xs opacity-90">
+                                    <a href={normalizeMediaUrl(att.storageUrl)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 underline text-xs opacity-90">
                                       <Paperclip className="h-3 w-3" />{att.fileName ?? 'Attachment'}
                                     </a>
                                   )}
