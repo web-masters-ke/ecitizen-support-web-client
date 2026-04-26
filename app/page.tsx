@@ -114,9 +114,19 @@ export default function HomePage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && localStorage.getItem('accessToken')) {
-      router.replace('/dashboard')
-    }
+    const token = localStorage.getItem('accessToken')
+    if (!token) return
+    // Validate the token before redirecting — avoids infinite /login loop on expired sessions
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    }).then((r) => {
+      if (r.ok) router.replace('/dashboard')
+      else {
+        localStorage.removeItem('accessToken')
+        localStorage.removeItem('refreshToken')
+        localStorage.removeItem('authUser')
+      }
+    }).catch(() => {})
   }, [router])
 
   return (
