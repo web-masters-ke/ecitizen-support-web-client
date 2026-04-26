@@ -400,7 +400,7 @@ export default function ContactPage() {
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-3">Looking for Quick Answers?</h2>
           <p className="text-muted-foreground mb-6">
-            Before contacting us, check our Knowledge Base — most common questions are already
+            Before contacting us, check our Knowledge Base. Most common questions are already
             answered there with step-by-step guides.
           </p>
           <Link

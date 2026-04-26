@@ -309,7 +309,7 @@ export default function RegisterPage() {
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
                       Strength: <span className="font-medium text-foreground">{strength.label}</span>
-                      {' — '}uppercase, lowercase, number &amp; special char
+                      {': '}uppercase, lowercase, number &amp; special char
                     </p>
                   </div>
                 )}

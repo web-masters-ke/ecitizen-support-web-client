@@ -180,7 +180,7 @@ export default function AccessibilityPage() {
                 { title: 'HTML5', desc: 'Semantic HTML5 markup is used throughout the platform to convey the meaning and structure of content to assistive technologies.' },
                 { title: 'WAI-ARIA', desc: 'Accessible Rich Internet Applications (WAI-ARIA) attributes are applied to dynamic content and custom interface components to communicate state and role information to screen readers.' },
                 { title: 'CSS3', desc: 'Responsive CSS3 layouts ensure the interface adapts correctly to different screen sizes, zoom levels, and viewport configurations without loss of functionality.' },
-                { title: 'Next.js / React', desc: 'The platform uses Next.js with server-side rendering, ensuring content is accessible even before JavaScript executes — important for users of older assistive technologies.' },
+                { title: 'Next.js / React', desc: 'The platform uses Next.js with server-side rendering, ensuring content is accessible even before JavaScript executes, which is important for users of older assistive technologies.' },
               ].map((item) => (
                 <div key={item.title} className="rounded-lg border border-border bg-card p-4">
                   <div className="flex items-center gap-2 mb-1">
@@ -376,7 +376,7 @@ export default function AccessibilityPage() {
               <p className="font-semibold text-foreground text-base">Ministry of Information, Communications and the Digital Economy</p>
               <p className="text-muted-foreground">Attn: Digital Accessibility Compliance</p>
               <p className="text-muted-foreground">Telposta Towers, Kenyatta Avenue</p>
-              <p className="text-muted-foreground">P.O. Box 27150 — 00100, Nairobi, Kenya</p>
+              <p className="text-muted-foreground">P.O. Box 27150-00100, Nairobi, Kenya</p>
               <div className="pt-2 border-t border-border">
                 <p>
                   <span className="font-medium text-foreground">Website: </span>

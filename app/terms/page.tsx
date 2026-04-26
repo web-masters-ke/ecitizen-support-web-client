@@ -283,8 +283,8 @@ export default function TermsOfServicePage() {
             <p className="text-muted-foreground leading-relaxed">
               These Terms of Service are governed by and construed in accordance with the laws of the Republic
               of Kenya, without regard to its conflict of law provisions. Any dispute arising out of or in
-              connection with these Terms — including any question regarding their existence, validity, or
-              termination — shall be subject to the exclusive jurisdiction of the courts of the Republic of
+              connection with these Terms (including any question regarding their existence, validity, or
+              termination) shall be subject to the exclusive jurisdiction of the courts of the Republic of
               Kenya. The parties agree to attempt to resolve any dispute through good-faith negotiation before
               initiating formal legal proceedings.
             </p>
@@ -311,7 +311,7 @@ export default function TermsOfServicePage() {
               <p className="font-semibold text-foreground text-base">Legal Services</p>
               <p className="text-muted-foreground">eCitizen Support Command Centre</p>
               <p className="text-muted-foreground">Telposta Towers, Kenyatta Avenue</p>
-              <p className="text-muted-foreground">P.O. Box 27150 — 00100, Nairobi, Kenya</p>
+              <p className="text-muted-foreground">P.O. Box 27150-00100, Nairobi, Kenya</p>
               <div className="pt-2 border-t border-green-200 dark:border-green-800 space-y-1">
                 <p>
                   <span className="font-medium text-foreground">Email: </span>

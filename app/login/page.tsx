@@ -82,7 +82,7 @@ function LoginForm() {
             eCitizen<br />Command Centre
           </h1>
           <p className="text-base text-white/70 max-w-xs leading-relaxed mb-10">
-            Your portal to submit, track, and resolve government service requests — fast.
+            Your portal to submit, track, and resolve government service requests, fast.
           </p>
 
           {/* Stats row */}

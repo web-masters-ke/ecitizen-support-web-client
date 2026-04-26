@@ -221,7 +221,7 @@ export default function ProfilePage() {
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-1.5">
-                  National ID <span className="text-muted-foreground text-xs">(optional — required for official services)</span>
+                  National ID <span className="text-muted-foreground text-xs">(optional, required for official services)</span>
                 </label>
                 <input
                   name="nationalId"

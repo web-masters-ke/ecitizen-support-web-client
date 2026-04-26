@@ -22,7 +22,7 @@ const FALLBACK_ARTICLES: KBArticle[] = [
   {
     id: '',
     title: 'Passport Application Guide 2025',
-    excerpt: 'Everything you need — booking an appointment, required photos, fees, and collection procedure.',
+    excerpt: 'Everything you need: booking an appointment, required photos, fees, and collection procedure.',
     category: { id: '', name: 'Travel' },
   },
   {

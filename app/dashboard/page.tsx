@@ -201,7 +201,7 @@ export default function DashboardPage() {
                           {ticket.ticketNumber.replace(/-/g, ' ')}
                         </td>
                         <td className="px-6 py-4 max-w-[200px] truncate text-foreground">{ticket.subject}</td>
-                        <td className="px-6 py-4 text-foreground hidden sm:table-cell">{ticket.agency?.agencyName ?? '—'}</td>
+                        <td className="px-6 py-4 text-foreground hidden sm:table-cell">{ticket.agency?.agencyName ?? '-'}</td>
                         <td className="px-6 py-4">
                           <span className="text-xs font-semibold text-foreground">
                             {statusStr(ticket.status).replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())}

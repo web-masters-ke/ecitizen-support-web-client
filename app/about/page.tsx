@@ -67,7 +67,7 @@ const features = [
   {
     icon: Building2,
     title: 'Multi-Agency Integration',
-    desc: 'Seamless access to 60+ government agencies through a single, unified login — no more agency-hopping.',
+    desc: 'Seamless access to 60+ government agencies through a single, unified login. No more agency-hopping.',
   },
   {
     icon: TrendingUp,
@@ -82,7 +82,7 @@ const features = [
   {
     icon: Clock,
     title: '24/7 Availability',
-    desc: 'Government services are available around the clock — apply at midnight or dawn, whenever it suits you.',
+    desc: 'Government services are available around the clock. Apply at midnight or dawn, whenever it suits you.',
   },
   {
     icon: Cpu,
@@ -183,7 +183,7 @@ export default function AboutPage() {
             Provide a unified digital platform for Kenyan citizens to access all government services
             seamlessly, reducing bureaucracy, saving time, and improving transparency across all
             levels of government. We believe every Kenyan deserves efficient, dignified, and
-            equitable access to public services — regardless of where they live.
+            equitable access to public services, regardless of where they live.
           </p>
         </div>
       </section>
@@ -199,7 +199,7 @@ export default function AboutPage() {
             </p>
             <p className="text-muted-foreground leading-relaxed mb-6">
               Citizens can apply for National IDs, passports, business permits, land searches,
-              court services, and much more — entirely online, without visiting physical offices.
+              court services, and much more, entirely online, without visiting physical offices.
               The platform eliminates queues, reduces processing times, and brings the full power
               of the Kenyan government to your fingertips.
             </p>
@@ -375,7 +375,7 @@ export default function AboutPage() {
             <div>
               <p className="font-medium text-foreground text-sm mb-1">Official Headquarters</p>
               <p className="text-sm text-muted-foreground">
-                Telposta Towers, Kenyatta Avenue, Nairobi, Kenya. P.O. Box 30025 — 00100 Nairobi.
+                Telposta Towers, Kenyatta Avenue, Nairobi, Kenya. P.O. Box 30025-00100 Nairobi.
               </p>
             </div>
           </div>
@@ -388,7 +388,7 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold mb-4">Get Started Today</h2>
           <p className="text-green-100 mb-8 text-lg">
             Join over 14 million Kenyans who already enjoy fast, secure, and convenient access to
-            government services — all from one place.
+            government services, all from one place.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <Link

@@ -360,8 +360,8 @@ export default function PrivacyPolicyPage() {
             <p className="text-muted-foreground leading-relaxed">
               eCitizen services are intended for persons aged 18 years and above. Minors under the age of 18 may
               not create an independent eCitizen account. However, a parent or legal guardian may apply for
-              government services on behalf of a minor child — for example, applying for a child&apos;s birth
-              certificate or minor&apos;s passport — provided the guardian is the registered account holder and
+              government services on behalf of a minor child (for example, applying for a child&apos;s birth
+              certificate or minor&apos;s passport), provided the guardian is the registered account holder and
               provides the required parental or guardian consent documentation. In all such cases, it is the
               guardian&apos;s responsibility to ensure the accuracy of information submitted on behalf of the minor.
             </p>
@@ -387,7 +387,7 @@ export default function PrivacyPolicyPage() {
               <p className="font-semibold text-foreground text-base">Data Protection Officer</p>
               <p className="text-muted-foreground">eCitizen Support Command Centre</p>
               <p className="text-muted-foreground">Telposta Towers, Kenyatta Avenue</p>
-              <p className="text-muted-foreground">P.O. Box 27150 — 00100, Nairobi, Kenya</p>
+              <p className="text-muted-foreground">P.O. Box 27150-00100, Nairobi, Kenya</p>
               <div className="pt-2 border-t border-green-200 dark:border-green-800 space-y-1">
                 <p>
                   <span className="font-medium text-foreground">Email: </span>

@@ -236,7 +236,7 @@ export default function TicketsPage() {
                       >
                         <td className="px-6 py-4 font-mono text-xs font-medium text-primary whitespace-nowrap">{ticket.ticketNumber}</td>
                         <td className="px-6 py-4 max-w-[220px] truncate text-foreground">{ticket.subject}</td>
-                        <td className="px-6 py-4 text-muted-foreground hidden sm:table-cell whitespace-nowrap">{ticket.agency?.agencyName ?? '—'}</td>
+                        <td className="px-6 py-4 text-muted-foreground hidden sm:table-cell whitespace-nowrap">{ticket.agency?.agencyName ?? '-'}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusStr(ticket.status))}`}>
                             {statusStr(ticket.status).replace('_', ' ')}

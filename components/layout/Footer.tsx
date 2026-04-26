@@ -16,7 +16,7 @@ export function Footer() {
               <p className="font-bold text-sm text-white">eCitizen Command Centre</p>
             </div>
             <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
-              The Government of Kenya&apos;s official support platform for eCitizen digital services — serving citizens across all 47 counties.
+              The Government of Kenya&apos;s official support platform for eCitizen digital services, serving citizens across all 47 counties.
             </p>
             <div className="space-y-1.5 pt-1">
               <a href="tel:+254800221000" className="flex items-center gap-2 text-xs text-zinc-400 hover:text-white transition-colors">

@@ -9,11 +9,11 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: {
-    default: 'eCitizen Kenya — Access Government Services Online',
+    default: 'eCitizen Kenya · Access Government Services Online',
     template: '%s | eCitizen Kenya',
   },
   description:
-    'Submit and track government service requests across all Kenyan agencies — anytime, anywhere. Fast, secure, and free.',
+    'Submit and track government service requests across all Kenyan agencies. Anytime, anywhere. Fast, secure, and free.',
   keywords: ['eCitizen', 'Kenya', 'government services', 'national ID', 'passport', 'KRA'],
   authors: [{ name: 'eCitizen Service Command Centre' }],
   creator: 'Republic of Kenya',
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_KE',
     url: 'https://ecitizen.go.ke',
-    title: 'eCitizen Kenya — Access Government Services Online',
+    title: 'eCitizen Kenya · Access Government Services Online',
     description: 'Submit and track government service requests across all Kenyan agencies.',
     siteName: 'eCitizen Kenya',
   },
