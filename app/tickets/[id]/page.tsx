@@ -409,27 +409,34 @@ export default function TicketDetailPage() {
                         <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${isCitizen ? 'bg-primary text-primary-foreground' : 'bg-muted text-foreground'}`}>
                           {getInitials(msg.sender?.firstName ?? '?', msg.sender?.lastName ?? '')}
                         </div>
-                        <div className={`max-w-[75%] flex flex-col gap-1 ${isCitizen ? 'items-end' : 'items-start'}`}>
-                          <div className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${isCitizen ? 'bg-primary text-primary-foreground rounded-tr-sm' : 'bg-muted text-foreground rounded-tl-sm'}`}>
-                            {msg.messageText && <p>{msg.messageText}</p>}
-                            {(msg.attachments ?? []).map((att) => {
-                              const isAudio = att.fileType?.startsWith('audio/')
-                              const isImage = att.fileType?.startsWith('image/')
-                              return (
-                                <div key={att.id} className="mt-1">
-                                  {isAudio ? (
-                                    <audio controls src={normalizeMediaUrl(att.storageUrl)} className="max-w-full" />
-                                  ) : isImage ? (
-                                    <img src={normalizeMediaUrl(att.storageUrl)} alt={att.fileName ?? 'image'} className="max-w-[220px] rounded-lg mt-1" />
-                                  ) : (
-                                    <a href={normalizeMediaUrl(att.storageUrl)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 underline text-xs opacity-90">
-                                      <Paperclip className="h-3 w-3" />{att.fileName ?? 'Attachment'}
-                                    </a>
-                                  )}
-                                </div>
-                              )
-                            })}
-                          </div>
+                        <div className={`max-w-[75%] flex flex-col gap-1.5 ${isCitizen ? 'items-end' : 'items-start'}`}>
+                          {msg.messageText && (
+                            <div className={`rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${isCitizen ? 'bg-primary text-primary-foreground rounded-tr-sm' : 'bg-muted text-foreground rounded-tl-sm'}`}>
+                              <p>{msg.messageText}</p>
+                            </div>
+                          )}
+                          {(msg.attachments ?? []).map((att) => {
+                            const isAudio = att.fileType?.startsWith('audio/')
+                            const isImage = att.fileType?.startsWith('image/')
+                            return (
+                              <div key={att.id}>
+                                {isAudio ? (
+                                  <div className="rounded-2xl border border-border bg-card px-3 py-2">
+                                    <audio controls src={normalizeMediaUrl(att.storageUrl)} className="max-w-[220px] h-8" />
+                                  </div>
+                                ) : isImage ? (
+                                  <img src={normalizeMediaUrl(att.storageUrl)} alt={att.fileName ?? 'image'}
+                                    className="max-w-[220px] rounded-2xl cursor-pointer"
+                                    onClick={() => window.open(normalizeMediaUrl(att.storageUrl)!, '_blank')} />
+                                ) : (
+                                  <div className="rounded-xl border border-border bg-card px-3 py-2 flex items-center gap-2 text-xs">
+                                    <Paperclip className="h-3 w-3 shrink-0 text-muted-foreground" />
+                                    <a href={normalizeMediaUrl(att.storageUrl)} target="_blank" rel="noopener noreferrer" className="underline truncate text-foreground">{att.fileName ?? 'Attachment'}</a>
+                                  </div>
+                                )}
+                              </div>
+                            )
+                          })}
                           <span className="text-xs text-muted-foreground px-1">
                             {msg.sender?.firstName} · {timeAgo(msg.createdAt)}
                           </span>
