@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation'
 import {
   ArrowLeft, Loader2, Send, AlertCircle, Clock, User,
   Phone, PhoneOff, PhoneMissed, MicOff, Mic, Volume2, Paperclip, X,
+  Play, Pause, Trash2,
 } from 'lucide-react'
 import { io } from 'socket.io-client'
 import { useAuth } from '@/contexts/AuthContext'
@@ -57,6 +58,51 @@ interface HistoryEntry {
   newStatus?: { id: string; name: string }
 }
 
+const WAVEFORM_BARS = [4,7,12,18,22,19,15,10,8,13,20,24,21,16,11,7,9,16,22,20,14,9,5,4,7,11,17,21,18,12]
+
+function VoiceNotePlayer({ src }: { src: string }) {
+  const [playing, setPlaying] = useState(false)
+  const [currentTime, setCurrentTime] = useState(0)
+  const [duration, setDuration] = useState(0)
+  const audioRef = useRef<HTMLAudioElement>(null)
+  const fmt = (s: number) => {
+    if (!isFinite(s) || isNaN(s)) return '0:00'
+    return `${Math.floor(s / 60)}:${Math.floor(s % 60).toString().padStart(2, '0')}`
+  }
+  const toggle = () => {
+    if (!audioRef.current) return
+    if (playing) { audioRef.current.pause(); setPlaying(false) }
+    else { audioRef.current.play().then(() => setPlaying(true)).catch(() => {}) }
+  }
+  const progress = duration > 0 ? currentTime / duration : 0
+  return (
+    <div className="flex items-center gap-2.5 w-56 rounded-2xl border border-border bg-card px-3 py-2.5">
+      <audio ref={audioRef} src={src}
+        onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime ?? 0)}
+        onLoadedMetadata={() => setDuration(audioRef.current?.duration ?? 0)}
+        onEnded={() => { setPlaying(false); setCurrentTime(0) }}
+      />
+      <button type="button" onClick={toggle}
+        className="h-8 w-8 rounded-full bg-primary flex items-center justify-center shrink-0 hover:bg-primary/90 transition-colors">
+        {playing
+          ? <Pause className="h-3 w-3 text-primary-foreground" />
+          : <Play className="h-3 w-3 text-primary-foreground ml-0.5" />}
+      </button>
+      <div className="flex-1 flex items-end gap-px h-7">
+        {WAVEFORM_BARS.map((h, i) => (
+          <div key={i}
+            className={`rounded-full w-full transition-colors ${i / WAVEFORM_BARS.length <= progress ? 'bg-primary' : 'bg-muted-foreground/25'}`}
+            style={{ height: `${Math.round(h * 100 / 24)}%` }}
+          />
+        ))}
+      </div>
+      <span className="text-[10px] font-mono text-muted-foreground shrink-0 tabular-nums w-8 text-right">
+        {fmt(playing ? currentTime : duration)}
+      </span>
+    </div>
+  )
+}
+
 const priorityBadge: Record<string, string> = {
   CRITICAL: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
   HIGH: 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400',
@@ -80,11 +126,14 @@ export default function TicketDetailPage() {
   const [uploadingFile, setUploadingFile] = useState(false)
   const [pendingFile, setPendingFile] = useState<{ url: string; name: string; type: string } | null>(null)
   const [recording, setRecording] = useState(false)
+  const [recordingSeconds, setRecordingSeconds] = useState(0)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
+  const recordingTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const shouldSendVoiceRef = useRef(true)
 
   // ── Call state ─────────────────────────────────────────────────────────────
   const [callLogId, setCallLogId] = useState<string | null>(null)
@@ -199,12 +248,7 @@ export default function TicketDetailPage() {
     }
   }
 
-  const handleVoiceToggle = async () => {
-    if (recording) {
-      mediaRecorderRef.current?.stop()
-      setRecording(false)
-      return
-    }
+  const startRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const mr = new MediaRecorder(stream)
@@ -212,6 +256,9 @@ export default function TicketDetailPage() {
       mr.ondataavailable = (e) => audioChunksRef.current.push(e.data)
       mr.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop())
+        if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null }
+        setRecordingSeconds(0)
+        if (!shouldSendVoiceRef.current) return
         const blob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
         const fd = new FormData()
         fd.append('file', blob, `voice-${Date.now()}.webm`)
@@ -230,9 +277,25 @@ export default function TicketDetailPage() {
       mr.start()
       mediaRecorderRef.current = mr
       setRecording(true)
+      setRecordingSeconds(0)
+      recordingTimerRef.current = setInterval(() => setRecordingSeconds((s) => s + 1), 1000)
     } catch {
       setError('Microphone access denied')
     }
+  }
+
+  const stopRecording = () => {
+    shouldSendVoiceRef.current = true
+    mediaRecorderRef.current?.stop()
+    setRecording(false)
+  }
+
+  const cancelRecording = () => {
+    shouldSendVoiceRef.current = false
+    mediaRecorderRef.current?.stop()
+    setRecording(false)
+    if (recordingTimerRef.current) { clearInterval(recordingTimerRef.current); recordingTimerRef.current = null }
+    setRecordingSeconds(0)
   }
 
   const handleStartCall = async () => {
@@ -421,9 +484,7 @@ export default function TicketDetailPage() {
                             return (
                               <div key={att.id}>
                                 {isAudio ? (
-                                  <div className="rounded-2xl border border-border bg-card px-3 py-2">
-                                    <audio controls src={normalizeMediaUrl(att.storageUrl)} className="max-w-[220px] h-8" />
-                                  </div>
+                                  <VoiceNotePlayer src={normalizeMediaUrl(att.storageUrl) ?? ''} />
                                 ) : isImage ? (
                                   <img src={normalizeMediaUrl(att.storageUrl)} alt={att.fileName ?? 'image'}
                                     className="max-w-[220px] rounded-2xl cursor-pointer"
@@ -458,6 +519,33 @@ export default function TicketDetailPage() {
                       <button onClick={() => setPendingFile(null)} className="text-muted-foreground hover:text-foreground"><X className="h-3.5 w-3.5" /></button>
                     </div>
                   )}
+                  {recording ? (
+                    <div className="flex items-center gap-3">
+                      <style>{`@keyframes vbar{0%,100%{transform:scaleY(.3)}50%{transform:scaleY(1)}}`}</style>
+                      <button type="button" onClick={cancelRecording}
+                        className="shrink-0 h-10 w-10 rounded-xl border border-input flex items-center justify-center text-muted-foreground hover:text-red-500 hover:bg-red-50 transition-colors">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                      <div className="flex-1 flex items-center gap-3 rounded-xl border border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-900/40 px-3 py-2 h-10">
+                        <div className="flex items-end gap-0.5 h-5">
+                          {Array.from({ length: 20 }).map((_, i) => (
+                            <div key={i} className="w-1 bg-red-500 rounded-full origin-bottom"
+                              style={{ height: '18px', animation: `vbar ${0.5 + (i % 6) * 0.08}s ease-in-out infinite`, animationDelay: `${i * 0.04}s` }} />
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <div className="h-2 w-2 rounded-full bg-red-500 animate-pulse" />
+                          <span className="font-mono text-sm font-medium text-red-600 tabular-nums">
+                            {Math.floor(recordingSeconds / 60)}:{(recordingSeconds % 60).toString().padStart(2, '0')}
+                          </span>
+                        </div>
+                      </div>
+                      <button type="button" onClick={stopRecording} disabled={uploadingFile}
+                        className="shrink-0 h-10 w-10 rounded-xl bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors">
+                        {uploadingFile ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                      </button>
+                    </div>
+                  ) : (
                   <div className="flex gap-2 items-end">
                     <input ref={fileInputRef} type="file" className="hidden" onChange={handleFileChange} />
                     <button
@@ -479,10 +567,10 @@ export default function TicketDetailPage() {
                     />
                     <button
                       type="button"
-                      onClick={handleVoiceToggle}
+                      onClick={startRecording}
                       disabled={uploadingFile}
-                      className={`shrink-0 h-10 w-10 rounded-xl border flex items-center justify-center transition-colors disabled:opacity-50 ${recording ? 'border-red-500 bg-red-50 text-red-500 animate-pulse' : 'border-input text-muted-foreground hover:text-foreground hover:bg-muted'}`}
-                      title={recording ? 'Stop recording' : 'Record voice note'}
+                      className="shrink-0 h-10 w-10 rounded-xl border border-input flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors disabled:opacity-50"
+                      title="Record voice note"
                     >
                       <Mic className="h-4 w-4" />
                     </button>
@@ -494,6 +582,7 @@ export default function TicketDetailPage() {
                       {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
                     </button>
                   </div>
+                  )}
                 </div>
               )}
             </div>
