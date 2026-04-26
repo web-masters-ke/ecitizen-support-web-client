@@ -18,6 +18,7 @@ export function CitizenCallWidget() {
   const [minimised, setMinimised] = useState(false)
   const [duration, setDuration] = useState(0)
   const [callLogId, setCallLogId] = useState<string | null>(null)
+  const [activeCallerId, setActiveCallerId] = useState<string | null>(null)
   const remoteAudioRef = useRef<HTMLAudioElement>(null)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const startTimeRef = useRef<number>(0)
@@ -48,12 +49,14 @@ export function CitizenCallWidget() {
       stopTimer()
       callsApi.updateStatus(logId, 'ENDED', dur).catch(() => {})
       setCallLogId(null)
+      setActiveCallerId(null)
       setIncoming(null)
     },
     onCallRejected: (logId) => {
       stopTimer()
       callsApi.updateStatus(logId, 'MISSED').catch(() => {})
       setCallLogId(null)
+      setActiveCallerId(null)
       setIncoming(null)
     },
   })
@@ -67,6 +70,7 @@ export function CitizenCallWidget() {
 
   const handleAnswer = async () => {
     if (!incoming) return
+    setActiveCallerId(incoming.callerId)
     await answerCall(incoming, true)
     setIncoming(null)
   }
@@ -75,16 +79,18 @@ export function CitizenCallWidget() {
     if (!incoming) return
     rejectCall(incoming)
     callsApi.updateStatus(incoming.callLogId, 'MISSED').catch(() => {})
+    setActiveCallerId(null)
     setIncoming(null)
   }
 
   const handleHangup = () => {
-    if (!incoming && status !== 'connected') return
-    const targetId = incoming?.callerId ?? ''
-    hangup(targetId)
+    const callerId = activeCallerId ?? incoming?.callerId
+    if (!callerId) return
+    hangup(callerId)
     stopTimer()
     if (callLogId) callsApi.updateStatus(callLogId, 'ENDED', duration).catch(() => {})
     setCallLogId(null)
+    setActiveCallerId(null)
     setIncoming(null)
   }
 
