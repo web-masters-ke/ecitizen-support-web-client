@@ -71,7 +71,7 @@ const news = [
     title: 'Marriage Certificate Queries Now Routed to Civil Registration',
     date: 'February 2026',
     excerpt:
-      'The Civil Registration Service is now fully integrated with the Command Centre — all marriage certificate delays are resolved here.',
+      'The Civil Registration Service is now fully integrated with the Command Centre. All marriage certificate delays are resolved here.',
   },
 ]
 
@@ -79,7 +79,7 @@ const faqs = [
   {
     question: 'What is the eCitizen Command Centre?',
     answer:
-      'The eCitizen Command Centre is the Government of Kenya\'s official support and oversight platform for eCitizen digital services. When you encounter a problem with an eCitizen service — a delayed passport, a failed payment, a registration issue — you raise it here and a dedicated government support officer resolves it for you.',
+      'The eCitizen Command Centre is the Government of Kenya\'s official support and oversight platform for eCitizen digital services. When you encounter a problem with an eCitizen service (a delayed passport, a failed payment, a registration issue) you raise it here and a dedicated government support officer resolves it for you.',
   },
   {
     question: 'How do I create an account?',
@@ -94,7 +94,7 @@ const faqs = [
   {
     question: 'How long does it take to resolve my issue?',
     answer:
-      'Resolution times depend on the service and complexity. The Command Centre enforces strict SLA targets — most tickets receive a first response within 4 hours and are resolved within 48 hours. Critical issues are escalated automatically.',
+      'Resolution times depend on the service and complexity. The Command Centre enforces strict SLA targets: most tickets receive a first response within 4 hours and are resolved within 48 hours. Critical issues are escalated automatically.',
   },
   {
     question: 'Is my personal information safe?',
@@ -149,7 +149,7 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium mb-6 backdrop-blur-sm border border-white/15">
             <span className="text-base">🇰🇪</span>
-            <span>Republic of Kenya — eCitizen Command Centre</span>
+            <span>Republic of Kenya · eCitizen Command Centre</span>
           </div>
 
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight max-w-4xl mx-auto">
@@ -157,7 +157,7 @@ export default function HomePage() {
           </h1>
           <p className="mt-5 text-lg sm:text-xl text-white/80 max-w-2xl mx-auto leading-relaxed">
             Supporting the Government of Kenya&apos;s Digital Service Delivery.
-            Raise a ticket, track your request, and get it resolved — all in one place.
+            Raise a ticket, track your request, and get it resolved. All in one place.
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -320,7 +320,7 @@ export default function HomePage() {
               </h2>
               <p className="mt-4 text-white/80 leading-relaxed max-w-lg text-base">
                 Download the eCitizen Support app. Raise a ticket, get notified the moment
-                your officer replies, and track your request to resolution — all from your phone.
+                your officer replies, and track your request to resolution, all from your phone.
               </p>
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-md">
                 {[
@@ -479,7 +479,7 @@ export default function HomePage() {
           </h2>
           <p className="text-background/70 dark:text-muted-foreground text-lg mb-8 max-w-xl mx-auto">
             Create your free Command Centre account and get your government service issue
-            resolved by a dedicated support officer — within 48 hours.
+            resolved by a dedicated support officer, within 48 hours.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
