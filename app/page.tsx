@@ -178,7 +178,7 @@ export default function HomePage() {
           </div>
 
           {/* Trust strip */}
-          <div className="mt-16 grid grid-cols-2 sm:grid-cols-3 gap-8 max-w-2xl mx-auto">
+          <div className="mt-16 grid grid-cols-3 gap-6 max-w-2xl mx-auto">
             {[
               { icon: Users, label: '14M+ Citizens', sub: 'Supported nationwide' },
               { icon: Building2, label: '47 Counties', sub: 'Full national coverage' },

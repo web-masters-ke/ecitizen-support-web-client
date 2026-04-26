@@ -181,66 +181,86 @@ export default function TicketsPage() {
               </Link>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-muted/40">
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">Ticket #</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Subject</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden sm:table-cell">Agency</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden md:table-cell">Priority</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden lg:table-cell whitespace-nowrap">Created</th>
-                    <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden lg:table-cell whitespace-nowrap">Updated</th>
-                    <th className="text-right px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {tickets.map((ticket) => (
-                    <tr
-                      key={ticket.id}
-                      className="hover:bg-muted/30 transition-colors cursor-pointer"
-                      onClick={() => router.push(`/tickets/${ticket.id}`)}
-                    >
-                      <td className="px-6 py-4 font-mono text-xs font-medium text-primary whitespace-nowrap">
-                        {ticket.ticketNumber}
-                      </td>
-                      <td className="px-6 py-4 max-w-[220px] truncate text-foreground">
-                        {ticket.subject}
-                      </td>
-                      <td className="px-6 py-4 text-muted-foreground hidden sm:table-cell whitespace-nowrap">
-                        {ticket.agency?.agencyName ?? '—'}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusStr(ticket.status))}`}>
+            <>
+              {/* Mobile card list */}
+              <div className="sm:hidden divide-y divide-border">
+                {tickets.map((ticket) => (
+                  <Link
+                    key={ticket.id}
+                    href={`/tickets/${ticket.id}`}
+                    className="flex flex-col gap-2 px-4 py-4 hover:bg-muted/30 active:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="font-mono text-xs font-semibold text-primary leading-tight">{ticket.ticketNumber}</p>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${getStatusColor(statusStr(ticket.status))}`}>
                           {statusStr(ticket.status).replace('_', ' ')}
                         </span>
-                      </td>
-                      <td className={`px-6 py-4 text-xs font-medium hidden md:table-cell whitespace-nowrap`}>
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityBadgeColor(statusStr(ticket.priority))}`}>
+                      </div>
+                    </div>
+                    <p className="text-sm font-medium text-foreground leading-snug line-clamp-2">{ticket.subject}</p>
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <p className="text-xs text-muted-foreground">{ticket.agency?.agencyName ?? 'Unassigned'}</p>
+                        <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium ${priorityBadgeColor(statusStr(ticket.priority))}`}>
                           {statusStr(ticket.priority)}
                         </span>
-                      </td>
-                      <td className="px-6 py-4 text-muted-foreground hidden lg:table-cell whitespace-nowrap text-xs">
-                        {formatDate(ticket.createdAt)}
-                      </td>
-                      <td className="px-6 py-4 text-muted-foreground hidden lg:table-cell whitespace-nowrap text-xs">
-                        {formatDate(ticket.updatedAt)}
-                      </td>
-                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
-                        <Link
-                          href={`/tickets/${ticket.id}`}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline whitespace-nowrap"
-                        >
-                          <Eye className="h-3.5 w-3.5" />
-                          View
-                        </Link>
-                      </td>
+                      </div>
+                      <p className="text-xs text-muted-foreground whitespace-nowrap">{formatDate(ticket.createdAt)}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Desktop table */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-border bg-muted/40">
+                      <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider whitespace-nowrap">Ticket #</th>
+                      <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Subject</th>
+                      <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden sm:table-cell">Agency</th>
+                      <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Status</th>
+                      <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden md:table-cell">Priority</th>
+                      <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden lg:table-cell whitespace-nowrap">Created</th>
+                      <th className="text-left px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider hidden lg:table-cell whitespace-nowrap">Updated</th>
+                      <th className="text-right px-6 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {tickets.map((ticket) => (
+                      <tr
+                        key={ticket.id}
+                        className="hover:bg-muted/30 transition-colors cursor-pointer"
+                        onClick={() => router.push(`/tickets/${ticket.id}`)}
+                      >
+                        <td className="px-6 py-4 font-mono text-xs font-medium text-primary whitespace-nowrap">{ticket.ticketNumber}</td>
+                        <td className="px-6 py-4 max-w-[220px] truncate text-foreground">{ticket.subject}</td>
+                        <td className="px-6 py-4 text-muted-foreground hidden sm:table-cell whitespace-nowrap">{ticket.agency?.agencyName ?? '—'}</td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getStatusColor(statusStr(ticket.status))}`}>
+                            {statusStr(ticket.status).replace('_', ' ')}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-xs font-medium hidden md:table-cell whitespace-nowrap">
+                          <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${priorityBadgeColor(statusStr(ticket.priority))}`}>
+                            {statusStr(ticket.priority)}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-muted-foreground hidden lg:table-cell whitespace-nowrap text-xs">{formatDate(ticket.createdAt)}</td>
+                        <td className="px-6 py-4 text-muted-foreground hidden lg:table-cell whitespace-nowrap text-xs">{formatDate(ticket.updatedAt)}</td>
+                        <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                          <Link href={`/tickets/${ticket.id}`} className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline whitespace-nowrap">
+                            <Eye className="h-3.5 w-3.5" />
+                            View
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
 
