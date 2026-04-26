@@ -129,13 +129,12 @@ export default function HomePage() {
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1611348524140-53c9a25263d6?auto=format&fit=crop&w=1920&q=85)',
+            backgroundImage: 'url(/nairobi-bg.jpg)',
             backgroundSize: 'cover',
             backgroundPosition: 'center 40%',
           }}
         />
-        {/* Subtle bottom gradient for text readability — image stays clear */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/30" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-24 md:py-32 text-center">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-1.5 text-sm font-medium mb-6 backdrop-blur-sm border border-white/15">
@@ -297,7 +296,7 @@ export default function HomePage() {
       </section>
 
       {/* ── Command Centre on Your Phone ─────────────────────────────────────── */}
-      <section className="py-20 bg-gradient-to-br from-[#0f4023] via-[#1a6b3a] to-[#1e7d44] text-white">
+      <section className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="flex-1 text-center lg:text-left">
