@@ -1,8 +1,9 @@
 'use client'
 import { Suspense, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { Shield, Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
+import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { OfflineBanner } from '@/components/ui/OfflineBanner'
@@ -41,35 +42,89 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2 text-primary font-bold">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Shield className="h-4 w-4" />
+    <div className="min-h-screen flex">
+
+      {/* ── Left panel — Nairobi hero ─────────────────────────────────────── */}
+      <div className="hidden lg:flex lg:w-[55%] relative overflow-hidden">
+        <Image
+          src="/nairobi-bg.jpg"
+          alt="Nairobi skyline"
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        {/* Gradient overlay — lighter at top, darker at bottom */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0a1f3d]/80 via-[#0a1f3d]/65 to-[#0a1f3d]/85" />
+
+        {/* Kenya flag stripe */}
+        <div className="absolute top-0 left-0 right-0 flex h-1.5 z-10">
+          <div className="flex-1 bg-[#006600]" />
+          <div className="flex-1 bg-[#cc0000]" />
+          <div className="flex-1 bg-black" />
+          <div className="flex-1 bg-[#cc0000]" />
+          <div className="flex-1 bg-[#006600]" />
+        </div>
+
+        {/* Branding content */}
+        <div className="relative z-10 flex flex-col justify-center items-start px-14 py-20 text-white h-full">
+          <Image
+            src="/kenya-coat-of-arms.svg"
+            alt="Kenya Coat of Arms"
+            width={72}
+            height={72}
+            className="object-contain mb-6 drop-shadow-2xl"
+          />
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50 mb-2">
+            Republic of Kenya
+          </p>
+          <h1 className="text-4xl font-extrabold leading-tight mb-4 drop-shadow-lg">
+            eCitizen<br />Command Centre
+          </h1>
+          <p className="text-base text-white/70 max-w-xs leading-relaxed mb-10">
+            Your portal to submit, track, and resolve government service requests — fast.
+          </p>
+
+          {/* Stats row */}
+          <div className="flex gap-8">
+            {[
+              { value: '47', label: 'Counties' },
+              { value: '200+', label: 'Services' },
+              { value: '24/7', label: 'Support' },
+            ].map(({ value, label }) => (
+              <div key={label}>
+                <p className="text-2xl font-extrabold text-white">{value}</p>
+                <p className="text-xs text-white/55 mt-0.5">{label}</p>
+              </div>
+            ))}
           </div>
-          <span className="text-sm font-bold">eCitizen Command Centre</span>
-        </Link>
-        <ThemeToggle />
+        </div>
+
+        {/* Bottom attribution */}
+        <div className="absolute bottom-5 left-0 right-0 z-10 text-center">
+          <p className="text-[11px] text-white/30">&copy; {new Date().getFullYear()} Government of Kenya</p>
+        </div>
       </div>
 
-      <div className="flex flex-1 items-center justify-center px-4 py-8">
-        <div className="w-full max-w-md">
-          {/* Card */}
-          <div className="rounded-2xl border border-border bg-card shadow-sm px-8 py-10">
-            {/* Logo + Header */}
-            <div className="flex flex-col items-center text-center mb-8">
-              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 mb-4">
-                <Shield className="h-7 w-7 text-primary" />
-              </div>
-              <h1 className="text-2xl font-bold text-foreground">Welcome Back</h1>
-              <p className="mt-1 text-sm text-muted-foreground">Sign in to your Command Centre account</p>
+      {/* ── Right panel — form ────────────────────────────────────────────── */}
+      <div className="flex flex-1 flex-col bg-background">
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/kenya-coat-of-arms.svg" alt="Kenya" width={28} height={28} className="object-contain" />
+            <span className="text-sm font-bold text-foreground hidden sm:block">eCitizen Portal</span>
+          </Link>
+          <ThemeToggle />
+        </div>
+
+        <div className="flex flex-1 items-center justify-center px-6 py-10">
+          <div className="w-full max-w-sm">
+            <div className="mb-8 text-center">
+              <h2 className="text-2xl font-bold text-foreground">Welcome back</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Sign in to your eCitizen account</p>
             </div>
 
-            {/* Offline banner */}
             <OfflineBanner />
 
-            {/* Error */}
             {error && (
               <div className="mb-5 flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive">
                 <AlertCircle className="h-4 w-4 shrink-0" />
@@ -77,9 +132,7 @@ function LoginForm() {
               </div>
             )}
 
-            {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Email */}
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
                   Email Address
@@ -92,20 +145,16 @@ function LoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+                  className="flex h-11 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
               </div>
 
-              {/* Password */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label htmlFor="password" className="block text-sm font-medium text-foreground">
                     Password
                   </label>
-                  <Link
-                    href="/forgot-password"
-                    className="text-xs text-primary hover:underline"
-                  >
+                  <Link href="/forgot-password" className="text-xs text-primary hover:underline">
                     Forgot password?
                   </Link>
                 </div>
@@ -118,7 +167,7 @@ function LoginForm() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your password"
-                    className="flex h-10 w-full rounded-md border border-input bg-transparent px-3 py-2 pr-10 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
+                    className="flex h-11 w-full rounded-lg border border-input bg-background px-3 py-2 pr-10 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   />
                   <button
                     type="button"
@@ -131,11 +180,10 @@ function LoginForm() {
                 </div>
               </div>
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 rounded-md bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
               >
                 {loading ? (
                   <>
@@ -148,7 +196,6 @@ function LoginForm() {
               </button>
             </form>
 
-            {/* Register link */}
             <p className="mt-6 text-center text-sm text-muted-foreground">
               Don&apos;t have an account?{' '}
               <Link href="/register" className="font-medium text-primary hover:underline">
@@ -157,11 +204,11 @@ function LoginForm() {
             </p>
           </div>
         </div>
-      </div>
 
-      <p className="py-4 text-center text-xs text-muted-foreground" suppressHydrationWarning>
-        © {new Date().getFullYear()} Republic of Kenya. All rights reserved.
-      </p>
+        <p className="py-4 text-center text-xs text-muted-foreground border-t border-border" suppressHydrationWarning>
+          &copy; {new Date().getFullYear()} Republic of Kenya. All rights reserved.
+        </p>
+      </div>
     </div>
   )
 }
