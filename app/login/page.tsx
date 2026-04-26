@@ -32,8 +32,9 @@ function LoginForm() {
       await login(email, password)
       router.push(redirectTo)
     } catch (err: unknown) {
+      const d = (err as { response?: { data?: { message?: string; error?: { message?: string } } } })?.response?.data
       const msg =
-        (err as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        d?.error?.message || d?.message ||
         'Invalid email or password. Please try again.'
       setError(msg)
     } finally {
