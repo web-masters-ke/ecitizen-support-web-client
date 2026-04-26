@@ -306,8 +306,10 @@ export default function HomePage() {
       </section>
 
       {/* ── eCitizen Support on Your Phone ───────────────────────────────────── */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <section className="relative py-20 text-white overflow-hidden">
+        <div className="absolute inset-0" style={{ backgroundImage: 'url(/nairobi-bg.jpg)', backgroundSize: 'cover', backgroundPosition: 'center 60%' }} />
+        <div className="absolute inset-0 bg-black/70" />
+        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="flex-1 text-center lg:text-left">
               <span className="text-sm font-semibold text-white/60 uppercase tracking-wider">
