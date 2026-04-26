@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { AuthProvider } from '@/contexts/AuthContext'
+import { CitizenCallWidget } from '@/components/calls/CitizenCallWidget'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -56,7 +57,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {children}
+            <CitizenCallWidget />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
