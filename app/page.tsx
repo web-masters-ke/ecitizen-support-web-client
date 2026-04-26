@@ -305,7 +305,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Command Centre on Your Phone ─────────────────────────────────────── */}
+      {/* ── eCitizen Support on Your Phone ───────────────────────────────────── */}
       <section className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-12">
@@ -314,20 +314,19 @@ export default function HomePage() {
                 Mobile App
               </span>
               <h2 className="mt-2 text-3xl sm:text-4xl font-bold">
-                Command Centre on Your Phone
+                Your Support Request,<br />Right in Your Pocket
               </h2>
               <p className="mt-4 text-white/80 leading-relaxed max-w-lg text-base">
-                Download the Command Centre mobile app. Raise tickets, track resolutions,
-                receive push notifications, and communicate with your assigned officer —
-                from wherever you are.
+                Download the eCitizen Support app. Raise a ticket, get notified the moment
+                your officer replies, and track your request to resolution — all from your phone.
               </p>
               <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-md">
                 {[
-                  'Submit support tickets on the go',
-                  'Real-time push notifications',
-                  'Chat with your support officer',
-                  'Track ticket status and history',
-                  'Secure login with biometrics',
+                  'Raise a ticket in under 2 minutes',
+                  'Get notified when your agent replies',
+                  'Chat directly with your support officer',
+                  'Track every update in real time',
+                  'Attach photos and documents',
                   'Works across all 47 counties',
                 ].map((feature) => (
                   <div key={feature} className="flex items-center gap-2 text-sm text-white/80">
@@ -339,7 +338,7 @@ export default function HomePage() {
               <div className="mt-8 flex flex-col sm:flex-row items-center lg:items-start gap-4">
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 bg-white text-[#1a6b3a] rounded-xl px-6 py-3 text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+                  className="inline-flex items-center gap-2 bg-white text-slate-900 rounded-xl px-6 py-3 text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
                 >
                   <Download className="h-4 w-4" />
                   Google Play Store
@@ -354,42 +353,61 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Phone mockup */}
+            {/* Phone mockup — citizen ticket view */}
             <div className="flex-1 flex justify-center">
-              <div className="relative w-64 h-96 bg-white/10 rounded-[2.5rem] border-2 border-white/20 backdrop-blur-sm flex flex-col overflow-hidden shadow-2xl">
-                <div className="flex justify-between items-center px-6 py-3 bg-white/5">
-                  <span className="text-[10px] text-white/70">9:41</span>
-                  <div className="flex gap-1">
-                    <div className="w-3 h-1.5 rounded-sm bg-white/50" />
-                    <div className="w-1 h-1.5 rounded-sm bg-white/50" />
+              <div className="relative w-64 h-[420px] bg-white rounded-[2.5rem] border-4 border-slate-700 flex flex-col overflow-hidden shadow-2xl">
+                {/* Status bar */}
+                <div className="flex justify-between items-center px-5 py-2 bg-primary">
+                  <span className="text-[10px] text-white/80 font-medium">9:41</span>
+                  <div className="flex gap-1 items-center">
+                    <div className="w-3 h-1.5 rounded-sm bg-white/60" />
+                    <div className="w-1 h-1.5 rounded-sm bg-white/60" />
                   </div>
                 </div>
-                <div className="flex-1 flex flex-col items-center justify-center px-4 gap-4">
-                  <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
-                    <Shield className="h-8 w-8 text-white" />
+                {/* App header */}
+                <div className="bg-primary px-4 pb-3 flex items-center gap-2">
+                  <Headphones className="h-5 w-5 text-white" />
+                  <div>
+                    <p className="text-white font-bold text-sm leading-tight">eCitizen Support</p>
+                    <p className="text-white/60 text-[10px]">My Requests</p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-white font-bold text-lg leading-tight">Command Centre</p>
-                    <p className="text-white/60 text-xs">eCitizen Kenya</p>
+                </div>
+                {/* Notification banner */}
+                <div className="mx-3 mt-3 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 flex items-start gap-2">
+                  <Bell className="h-3.5 w-3.5 text-amber-500 mt-0.5 shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-semibold text-amber-800">Agent replied</p>
+                    <p className="text-[9px] text-amber-700 leading-tight">Your passport issue has been escalated to Immigration HQ…</p>
                   </div>
-                  <div className="w-full space-y-2 mt-2">
-                    {[
-                      { label: 'Passport Delay', status: 'In Progress' },
-                      { label: 'KRA PIN Issue', status: 'Resolved' },
-                      { label: 'NTSA Query', status: 'Open' },
-                    ].map(({ label, status }) => (
-                      <div
-                        key={label}
-                        className="w-full bg-white/10 rounded-lg px-3 py-2 flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-2">
-                          <MessageSquare className="h-3 w-3 text-white/60" />
-                          <span className="text-white/80 text-xs">{label}</span>
-                        </div>
-                        <span className="text-[9px] text-white/50">{status}</span>
+                </div>
+                {/* Ticket list */}
+                <div className="flex-1 px-3 pt-3 space-y-2 overflow-hidden">
+                  {[
+                    { label: 'Passport Renewal Delay', status: 'In Progress', dot: 'bg-amber-400' },
+                    { label: 'KRA PIN Reset', status: 'Resolved', dot: 'bg-emerald-500' },
+                    { label: 'NTSA Licence Query', status: 'Open', dot: 'bg-blue-400' },
+                  ].map(({ label, status, dot }) => (
+                    <div key={label} className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={`h-2 w-2 rounded-full shrink-0 ${dot}`} />
+                        <span className="text-slate-700 text-[10px] font-medium">{label}</span>
                       </div>
-                    ))}
-                  </div>
+                      <span className="text-[9px] text-slate-400">{status}</span>
+                    </div>
+                  ))}
+                </div>
+                {/* Bottom nav */}
+                <div className="px-4 py-3 border-t border-slate-100 flex justify-around">
+                  {[
+                    { icon: FileText, label: 'Tickets' },
+                    { icon: MessageSquare, label: 'Chat' },
+                    { icon: Bell, label: 'Alerts' },
+                  ].map(({ icon: Icon, label }) => (
+                    <div key={label} className="flex flex-col items-center gap-0.5">
+                      <Icon className="h-4 w-4 text-slate-400" />
+                      <span className="text-[8px] text-slate-400">{label}</span>
+                    </div>
+                  ))}
                 </div>
                 <div className="flex justify-center pb-3">
                   <div className="w-20 h-1 rounded-full bg-white/30" />
