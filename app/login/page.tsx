@@ -110,23 +110,17 @@ function LoginForm() {
       <div className="flex flex-1 flex-col bg-background">
         {/* Top bar */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/kenya-coat-of-arms.svg" alt="Kenya" width={28} height={28} className="object-contain" />
-            <span className="text-sm font-bold text-foreground hidden sm:block">eCitizen Portal</span>
+          <Link href="/">
+            <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={120} height={25} className="object-contain" />
           </Link>
           <ThemeToggle />
         </div>
 
         <div className="flex flex-1 items-center justify-center px-6 py-10">
           <div className="w-full max-w-sm">
-            {/* eCitizen logo block */}
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <Image src="/kenya-coat-of-arms.png" alt="Republic of Kenya" width={48} height={48} className="object-contain" />
-              <div className="w-px h-9 bg-border" />
-              <div className="flex items-center gap-1">
-                <span className="text-2xl font-black tracking-tight" style={{ color: '#14b04c' }}>e</span>
-                <span className="text-2xl font-black tracking-tight text-foreground">Citizen</span>
-              </div>
+            {/* eCitizen logo */}
+            <div className="flex justify-center mb-6">
+              <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={220} height={46} className="object-contain" />
             </div>
             {/* Kenya flag stripe */}
             <div className="flex h-0.5 w-full mb-7 rounded-full overflow-hidden">

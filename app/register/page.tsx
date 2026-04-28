@@ -187,9 +187,8 @@ export default function RegisterPage() {
       <div className="flex flex-1 flex-col bg-background overflow-y-auto">
         {/* Top bar */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
-          <Link href="/" className="flex items-center gap-2">
-            <Image src="/kenya-coat-of-arms.svg" alt="Kenya" width={28} height={28} className="object-contain" />
-            <span className="text-sm font-bold text-foreground hidden sm:block">eCitizen Portal</span>
+          <Link href="/">
+            <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={120} height={25} className="object-contain" />
           </Link>
           <ThemeToggle />
         </div>

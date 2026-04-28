@@ -111,19 +111,8 @@ export default function FeedbackPage() {
 
         {/* Header */}
         <div className="px-8 pt-8 pb-0">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <Image
-              src="/kenya-coat-of-arms.png"
-              alt="Republic of Kenya"
-              width={56}
-              height={56}
-              className="object-contain"
-            />
-            <div className="w-px h-10 bg-gray-200" />
-            <div className="flex items-center gap-1.5">
-              <span className="text-2xl font-black tracking-tight" style={{ color: '#14b04c' }}>e</span>
-              <span className="text-2xl font-black tracking-tight text-gray-900">Citizen</span>
-            </div>
+          <div className="flex justify-center mb-6">
+            <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={220} height={46} className="object-contain" />
           </div>
 
           <div className="text-center mb-2">
