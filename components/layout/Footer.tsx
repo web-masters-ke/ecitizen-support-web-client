@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { Shield, Phone, Mail } from 'lucide-react'
+import Image from 'next/image'
+import { Phone, Mail } from 'lucide-react'
 
 export function Footer() {
   return (
@@ -9,11 +10,8 @@ export function Footer() {
 
           {/* Brand */}
           <div className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white">
-                <Shield className="h-4 w-4" />
-              </div>
-              <p className="font-bold text-sm text-white">eCitizen Command Centre</p>
+            <div className="rounded-lg bg-white px-3 py-2 inline-block">
+              <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={130} height={28} className="h-7 w-auto object-contain" />
             </div>
             <p className="text-xs text-zinc-400 leading-relaxed max-w-xs">
               The Government of Kenya&apos;s official support platform for eCitizen digital services, serving citizens across all 47 counties.
