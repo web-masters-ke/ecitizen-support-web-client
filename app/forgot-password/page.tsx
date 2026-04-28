@@ -1,7 +1,8 @@
 'use client'
 import { useState } from 'react'
 import Link from 'next/link'
-import { Shield, Loader2, AlertCircle, Mail, ArrowLeft } from 'lucide-react'
+import Image from 'next/image'
+import { Loader2, AlertCircle, Mail, ArrowLeft } from 'lucide-react'
 import { authApi } from '@/lib/api'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 
@@ -32,11 +33,8 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen flex flex-col bg-background">
       {/* Top bar */}
       <div className="flex items-center justify-between px-6 py-4">
-        <Link href="/" className="flex items-center gap-2 text-primary font-bold">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Shield className="h-4 w-4" />
-          </div>
-          <span className="text-sm font-bold">eCitizen Kenya</span>
+        <Link href="/">
+          <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={130} height={28} className="h-7 w-auto object-contain" />
         </Link>
         <ThemeToggle />
       </div>
@@ -68,9 +66,7 @@ export default function ForgotPasswordPage() {
               /* Form state */
               <>
                 <div className="flex flex-col items-center text-center mb-8">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 mb-4">
-                    <Shield className="h-7 w-7 text-primary" />
-                  </div>
+                  <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={160} height={34} className="h-9 w-auto object-contain mb-4" />
                   <h1 className="text-2xl font-bold text-foreground">Forgot Password?</h1>
                   <p className="mt-1 text-sm text-muted-foreground">
                     Enter your email and we&apos;ll send you reset instructions

@@ -91,19 +91,21 @@ export function Navbar() {
               aria-label="eCitizen Service Command Centre"
             >
               <Image
-                src="/kenya-coat-of-arms.svg"
-                alt="Kenya Coat of Arms"
-                width={36}
-                height={36}
-                className="h-9 w-9 object-contain"
+                src="/ecitizen-logo.png"
+                alt="eCitizen Kenya"
+                width={140}
+                height={30}
+                className="h-8 w-auto object-contain hidden sm:block"
                 priority
               />
-              <div className="hidden sm:block leading-tight">
-                <p className="font-bold text-sm text-primary">eCitizen</p>
-                <p className="text-[10px] text-muted-foreground leading-none">
-                  Service Command Centre
-                </p>
-              </div>
+              <Image
+                src="/ecitizen-logo.png"
+                alt="eCitizen Kenya"
+                width={100}
+                height={22}
+                className="h-7 w-auto object-contain sm:hidden"
+                priority
+              />
             </Link>
 
             {/* Desktop nav links */}
