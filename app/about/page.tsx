@@ -221,7 +221,7 @@ export default function AboutPage() {
           {/* Visual block */}
           <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-2xl p-8 border border-green-200 dark:border-green-800">
             <div className="flex items-center gap-3 mb-6">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-600 text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
                 <Shield className="h-5 w-5" />
               </div>
               <div>
@@ -271,7 +271,7 @@ export default function AboutPage() {
                   </div>
 
                   {/* Dot — absolute on mobile, absolute in the middle on desktop */}
-                  <div className="absolute left-6 md:left-1/2 top-1.5 w-4 h-4 rounded-full bg-green-600 border-2 border-white dark:border-background shadow -translate-x-1/2" />
+                  <div className="absolute left-6 md:left-1/2 top-1.5 w-4 h-4 rounded-full bg-primary border-2 border-white dark:border-background shadow -translate-x-1/2" />
 
                   {/* Spacer for the other side on desktop */}
                   <div className="hidden md:block md:w-[calc(50%-2rem)]" />
@@ -322,7 +322,7 @@ export default function AboutPage() {
                 key={p.abbr}
                 className="rounded-xl border border-green-200 dark:border-green-800 bg-white dark:bg-card p-5 text-center hover:border-green-400 dark:hover:border-green-600 hover:shadow-md transition-all"
               >
-                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-green-600 text-white font-bold text-sm">
+                <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white font-bold text-sm">
                   {p.abbr.slice(0, 4)}
                 </div>
                 <h3 className="text-sm font-semibold text-foreground mb-1">{p.name}</h3>

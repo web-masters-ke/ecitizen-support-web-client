@@ -23,7 +23,7 @@ function SectionHeading({ id, children }: { id: string; children: React.ReactNod
       id={id}
       className="flex items-center gap-3 text-xl font-bold text-foreground mt-12 mb-4 scroll-mt-24"
     >
-      <span className="block h-6 w-1 rounded-full bg-green-600 dark:bg-green-400 shrink-0" />
+      <span className="block h-6 w-1 rounded-full bg-primary dark:bg-green-400 shrink-0" />
       {children}
     </h2>
   )
@@ -91,7 +91,7 @@ export default function AccessibilityPage() {
                 </p>
                 <a
                   href="mailto:accessibility@ecitizen.go.ke"
-                  className="block rounded-lg bg-green-600 text-white text-center text-sm font-medium px-3 py-2 hover:bg-green-700 transition-colors"
+                  className="block rounded-lg bg-primary text-white text-center text-sm font-medium px-3 py-2 hover:bg-primary/90 transition-colors"
                 >
                   accessibility@ecitizen.go.ke
                 </a>
@@ -332,19 +332,19 @@ export default function AccessibilityPage() {
               <p className="text-sm font-semibold text-foreground mb-4">How to Report an Accessibility Issue</p>
               <div className="space-y-3 text-sm text-muted-foreground">
                 <div className="flex items-start gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-white text-xs font-bold shrink-0">1</span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white text-xs font-bold shrink-0">1</span>
                   <span>Describe the accessibility barrier you encountered, including the page or feature affected.</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-white text-xs font-bold shrink-0">2</span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white text-xs font-bold shrink-0">2</span>
                   <span>Include the assistive technology and browser or app you were using when the issue occurred.</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-white text-xs font-bold shrink-0">3</span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white text-xs font-bold shrink-0">3</span>
                   <span>Send your report to us via any of the contact channels below.</span>
                 </div>
                 <div className="flex items-start gap-3">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-green-600 text-white text-xs font-bold shrink-0">4</span>
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white text-xs font-bold shrink-0">4</span>
                   <span>We aim to acknowledge all reports within 2 business days and resolve or provide a workaround within 5 business days.</span>
                 </div>
               </div>

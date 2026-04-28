@@ -26,7 +26,7 @@ function SectionHeading({ id, children }: { id: string; children: React.ReactNod
       id={id}
       className="flex items-center gap-3 text-xl font-bold text-foreground mt-12 mb-4 scroll-mt-24"
     >
-      <span className="block h-6 w-1 rounded-full bg-green-600 dark:bg-green-400 shrink-0" />
+      <span className="block h-6 w-1 rounded-full bg-primary dark:bg-green-400 shrink-0" />
       {children}
     </h2>
   )
@@ -157,7 +157,7 @@ export default function PrivacyPolicyPage() {
                 'Detecting, investigating, and preventing fraudulent transactions and other illegal activities.',
               ].map((text) => (
                 <li key={text} className="flex items-start gap-3">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-green-600 dark:bg-green-400 shrink-0" />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-primary dark:bg-green-400 shrink-0" />
                   <span>{text}</span>
                 </li>
               ))}
@@ -206,7 +206,7 @@ export default function PrivacyPolicyPage() {
                 'With authorised data processors who act on our behalf under strict data processing agreements and are bound by the same data protection obligations.',
               ].map((text) => (
                 <li key={text} className="flex items-start gap-3">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-green-600 dark:bg-green-400 shrink-0" />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-primary dark:bg-green-400 shrink-0" />
                   <span>{text}</span>
                 </li>
               ))}
@@ -344,7 +344,7 @@ export default function PrivacyPolicyPage() {
                 'Automated intrusion detection systems with 24/7 security monitoring.',
               ].map((text) => (
                 <li key={text} className="flex items-start gap-3">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-green-600 dark:bg-green-400 shrink-0" />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-primary dark:bg-green-400 shrink-0" />
                   <span>{text}</span>
                 </li>
               ))}

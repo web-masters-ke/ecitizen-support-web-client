@@ -26,7 +26,7 @@ function SectionHeading({ id, children }: { id: string; children: React.ReactNod
       id={id}
       className="flex items-center gap-3 text-xl font-bold text-foreground mt-12 mb-4 scroll-mt-24"
     >
-      <span className="block h-6 w-1 rounded-full bg-green-600 dark:bg-green-400 shrink-0" />
+      <span className="block h-6 w-1 rounded-full bg-primary dark:bg-green-400 shrink-0" />
       {children}
     </h2>
   )
@@ -129,7 +129,7 @@ export default function TermsOfServicePage() {
                 'You must not have been previously suspended or banned from the Platform for violation of these Terms.',
               ].map((text) => (
                 <li key={text} className="flex items-start gap-3">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-green-600 dark:bg-green-400 shrink-0" />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-primary dark:bg-green-400 shrink-0" />
                   <span>{text}</span>
                 </li>
               ))}
@@ -150,7 +150,7 @@ export default function TermsOfServicePage() {
                 'Keep your registered email address and phone number up to date to receive important service notifications.',
               ].map((text) => (
                 <li key={text} className="flex items-start gap-3">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-green-600 dark:bg-green-400 shrink-0" />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-primary dark:bg-green-400 shrink-0" />
                   <span>{text}</span>
                 </li>
               ))}
@@ -169,7 +169,7 @@ export default function TermsOfServicePage() {
                 'Making authorised fee payments for government services.',
               ].map((text) => (
                 <li key={text} className="flex items-start gap-3">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-green-600 dark:bg-green-400 shrink-0" />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-primary dark:bg-green-400 shrink-0" />
                   <span>{text}</span>
                 </li>
               ))}
@@ -267,7 +267,7 @@ export default function TermsOfServicePage() {
                 'Non-payment of fees owed to any government agency through the Platform.',
               ].map((text) => (
                 <li key={text} className="flex items-start gap-3">
-                  <span className="mt-1 h-2 w-2 rounded-full bg-green-600 dark:bg-green-400 shrink-0" />
+                  <span className="mt-1 h-2 w-2 rounded-full bg-primary dark:bg-green-400 shrink-0" />
                   <span>{text}</span>
                 </li>
               ))}

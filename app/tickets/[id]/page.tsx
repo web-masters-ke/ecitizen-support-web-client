@@ -421,7 +421,7 @@ export default function TicketDetailPage() {
             ) : canCall ? (
               <button
                 onClick={handleStartCall}
-                className="flex items-center gap-2 rounded-full border-2 border-green-600 bg-transparent px-4 py-2 text-sm font-semibold text-green-700 dark:text-green-400 hover:bg-green-600 hover:text-white transition-all"
+                className="flex items-center gap-2 rounded-full border-2 border-green-600 bg-transparent px-4 py-2 text-sm font-semibold text-green-700 dark:text-green-400 hover:bg-primary hover:text-white transition-all"
               >
                 <Phone className="h-4 w-4" />
                 Call Agent

@@ -207,7 +207,7 @@ export function CitizenCallWidget() {
                     <button onClick={handleReject} className="h-12 w-12 rounded-full bg-red-500 hover:bg-red-600 flex items-center justify-center" title="Decline">
                       <PhoneMissed className="h-5 w-5 text-white" />
                     </button>
-                    <button onClick={() => handleAnswer(false)} className="h-12 w-12 rounded-full bg-green-500 hover:bg-green-600 flex items-center justify-center animate-pulse" title="Answer">
+                    <button onClick={() => handleAnswer(false)} className="h-12 w-12 rounded-full bg-primary hover:bg-primary/90 flex items-center justify-center animate-pulse" title="Answer">
                       <Phone className="h-5 w-5 text-white" />
                     </button>
                     <button onClick={() => handleAnswer(true)} className="h-12 w-12 rounded-full bg-blue-500 hover:bg-blue-600 flex items-center justify-center" title="Answer with video">

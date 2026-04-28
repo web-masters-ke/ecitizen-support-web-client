@@ -73,7 +73,7 @@ function ResetPasswordForm() {
           </p>
           <Link
             href="/login"
-            className="inline-block rounded-lg bg-green-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors"
+            className="inline-block rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-white hover:bg-primary/90 transition-colors"
           >
             Go to Login
           </Link>
@@ -179,7 +179,7 @@ function ResetPasswordForm() {
           <button
             type="submit"
             disabled={loading || !token}
-            className="w-full rounded-lg bg-green-600 py-2.5 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60 transition-colors"
+            className="w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-white hover:bg-primary/90 disabled:opacity-60 transition-colors"
           >
             {loading ? 'Resetting…' : 'Reset Password'}
           </button>
