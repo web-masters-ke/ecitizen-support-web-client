@@ -28,8 +28,8 @@ const AUDIO_CONSTRAINTS: MediaTrackConstraints = {
   channelCount: 1,
 };
 
-const XIRSYS_USERNAME = 'nLwh8A66HieRxOQkp7d2jgUZbWlo91O45cGV4vCSzZ467LS7NYPL1XnLFe83yzXMAAAAAGnqX1B3YXNhYWNoYXQ=';
-const XIRSYS_CREDENTIAL = 'f452fc82-3f3e-11f1-8ef6-0242ac140004';
+const XIRSYS_USERNAME = process.env.NEXT_PUBLIC_XIRSYS_USERNAME ?? '';
+const XIRSYS_CREDENTIAL = process.env.NEXT_PUBLIC_XIRSYS_CREDENTIAL ?? '';
 
 const ICE_SERVERS: RTCIceServer[] = [
   // Google STUN (free, always-on fallback)
