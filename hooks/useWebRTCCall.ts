@@ -28,12 +28,27 @@ const AUDIO_CONSTRAINTS: MediaTrackConstraints = {
   channelCount: 1,
 };
 
+const XIRSYS_USERNAME = 'nLwh8A66HieRxOQkp7d2jgUZbWlo91O45cGV4vCSzZ467LS7NYPL1XnLFe83yzXMAAAAAGnqX1B3YXNhYWNoYXQ=';
+const XIRSYS_CREDENTIAL = 'f452fc82-3f3e-11f1-8ef6-0242ac140004';
+
 const ICE_SERVERS: RTCIceServer[] = [
-  { urls: 'stun:stun.l.google.com:19302' },
-  { urls: 'stun:stun1.l.google.com:19302' },
-  { urls: 'turn:openrelay.metered.ca:80', username: 'openrelayproject', credential: 'openrelayproject' },
-  { urls: 'turn:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
-  { urls: 'turns:openrelay.metered.ca:443', username: 'openrelayproject', credential: 'openrelayproject' },
+  // Google STUN (free, always-on fallback)
+  { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
+  // Xirsys STUN
+  { urls: 'stun:bn-turn1.xirsys.com' },
+  // Xirsys TURN — all transports
+  {
+    username: XIRSYS_USERNAME,
+    credential: XIRSYS_CREDENTIAL,
+    urls: [
+      'turn:bn-turn1.xirsys.com:80?transport=udp',
+      'turn:bn-turn1.xirsys.com:3478?transport=udp',
+      'turn:bn-turn1.xirsys.com:80?transport=tcp',
+      'turn:bn-turn1.xirsys.com:3478?transport=tcp',
+      'turns:bn-turn1.xirsys.com:443?transport=tcp',
+      'turns:bn-turn1.xirsys.com:5349?transport=tcp',
+    ],
+  },
 ];
 
 export function useWebRTCCall({
