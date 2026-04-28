@@ -119,7 +119,22 @@ function LoginForm() {
 
         <div className="flex flex-1 items-center justify-center px-6 py-10">
           <div className="w-full max-w-sm">
-            <div className="mb-8 text-center">
+            {/* eCitizen logo block */}
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <Image src="/kenya-coat-of-arms.png" alt="Republic of Kenya" width={48} height={48} className="object-contain" />
+              <div className="w-px h-9 bg-border" />
+              <div className="flex items-center gap-1">
+                <span className="text-2xl font-black tracking-tight" style={{ color: '#14b04c' }}>e</span>
+                <span className="text-2xl font-black tracking-tight text-foreground">Citizen</span>
+              </div>
+            </div>
+            {/* Kenya flag stripe */}
+            <div className="flex h-0.5 w-full mb-7 rounded-full overflow-hidden">
+              <div className="flex-1 bg-black" />
+              <div className="flex-1 bg-[#e7191b]" />
+              <div className="flex-1 bg-[#14b04c]" />
+            </div>
+            <div className="mb-7 text-center">
               <h2 className="text-2xl font-bold text-foreground">Welcome back</h2>
               <p className="mt-1 text-sm text-muted-foreground">Sign in to your eCitizen account</p>
             </div>
@@ -151,14 +166,9 @@ function LoginForm() {
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label htmlFor="password" className="block text-sm font-medium text-foreground">
-                    Password
-                  </label>
-                  <Link href="/forgot-password" className="text-xs text-primary hover:underline">
-                    Forgot password?
-                  </Link>
-                </div>
+                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5">
+                  Password
+                </label>
                 <div className="relative">
                   <input
                     id="password"
@@ -179,12 +189,18 @@ function LoginForm() {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                <div className="flex justify-end mt-1.5">
+                  <Link href="/forgot-password" className="text-xs hover:underline" style={{ color: '#14b04c' }}>
+                    Forgot password?
+                  </Link>
+                </div>
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                style={{ background: '#14b04c' }}
               >
                 {loading ? (
                   <>

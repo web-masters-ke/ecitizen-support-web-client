@@ -313,13 +313,23 @@ export default function TrackPage() {
               </div>
 
               {/* Action links */}
-              <div className="border-t border-border pt-4 flex flex-col sm:flex-row gap-3">
+              <div className="border-t border-border pt-4 flex flex-col sm:flex-row gap-3 flex-wrap">
                 <Link
                   href="/login"
-                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-green-700 transition-colors flex-1 sm:flex-none"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors flex-1 sm:flex-none"
+                  style={{ background: '#14b04c' }}
                 >
                   Login to View Full Details
                 </Link>
+                {(statusStr(ticket.status) === 'RESOLVED' || statusStr(ticket.status) === 'CLOSED') && (
+                  <Link
+                    href={`/feedback/${ticket.id}`}
+                    className="inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold text-white transition-colors flex-1 sm:flex-none"
+                    style={{ background: '#f59e0b' }}
+                  >
+                    ⭐ Rate your experience
+                  </Link>
+                )}
                 <button
                   onClick={() => { setTicket(null); setRef('') }}
                   className="inline-flex items-center justify-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground hover:bg-muted transition-colors flex-1 sm:flex-none"
