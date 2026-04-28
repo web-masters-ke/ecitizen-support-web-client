@@ -144,13 +144,15 @@ export default function RegisterPage() {
         </div>
 
         <div className="relative z-10 flex flex-col justify-center items-start px-12 py-20 text-white h-full">
-          <Image
-            src="/kenya-coat-of-arms.svg"
-            alt="Kenya Coat of Arms"
-            width={64}
-            height={64}
-            className="object-contain mb-6 drop-shadow-2xl"
-          />
+          <div className="rounded-xl bg-white px-6 py-3 shadow-xl mb-6 self-start">
+            <Image
+              src="/ecitizen-logo.png"
+              alt="eCitizen Kenya"
+              width={180}
+              height={38}
+              className="h-9 w-auto object-contain"
+            />
+          </div>
           <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50 mb-2">
             Republic of Kenya
           </p>

@@ -238,11 +238,7 @@ export function Navbar() {
             {/* Drawer header */}
             <div className="flex items-center justify-between px-5 py-4 border-b border-border">
               <Link href={homeHref} onClick={() => setMobileOpen(false)} className="flex items-center gap-3">
-                <Image src="/kenya-coat-of-arms.svg" alt="Kenya Coat of Arms" width={32} height={32} className="h-8 w-8" />
-                <div className="leading-tight">
-                  <p className="font-bold text-sm text-primary">eCitizen</p>
-                  <p className="text-[10px] text-muted-foreground leading-none">Service Command Centre</p>
-                </div>
+                <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={120} height={26} className="h-7 w-auto object-contain" />
               </Link>
               <button
                 onClick={() => setMobileOpen(false)}
