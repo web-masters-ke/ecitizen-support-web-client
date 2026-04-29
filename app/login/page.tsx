@@ -1,11 +1,11 @@
 'use client'
-import { Suspense, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { Loader2, AlertCircle } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { OfflineBanner } from '@/components/ui/OfflineBanner'
-import { signInWithECitizen } from '@/lib/auth/ecitizen'
+import { prepareECitizenSignIn, signInWithECitizen } from '@/lib/auth/ecitizen'
 
 function LoginForm() {
   const searchParams = useSearchParams()
@@ -13,6 +13,17 @@ function LoginForm() {
 
   const [ssoLoading, setSsoLoading] = useState(false)
   const [error, setError] = useState('')
+  const prefetchedUrlRef = useRef<string | null>(null)
+
+  // Prefetch the authorize URL on mount. When the user clicks the button
+  // we navigate instantly — no network round-trip in the click path.
+  useEffect(() => {
+    let cancelled = false
+    prepareECitizenSignIn(redirectTo)
+      .then((url) => { if (!cancelled) prefetchedUrlRef.current = url })
+      .catch(() => { /* fallback to lazy fetch in handleSsoClick */ })
+    return () => { cancelled = true }
+  }, [redirectTo])
 
   const handleSsoClick = async () => {
     if (ssoLoading) return // guard against double-click while we're already redirecting
@@ -22,10 +33,17 @@ function LoginForm() {
       return
     }
     setSsoLoading(true)
+
+    // Fast path: prefetched URL is ready, navigate instantly
+    const prefetched = prefetchedUrlRef.current
+    if (prefetched) {
+      window.location.assign(prefetched)
+      return
+    }
+
+    // Fallback: prefetch failed, do it now
     try {
       await signInWithECitizen(redirectTo)
-      // signInWithECitizen calls window.location.assign — page is unloading.
-      // We leave ssoLoading=true so the button stays disabled until navigation.
     } catch (e) {
       setError(
         e instanceof Error ? e.message : 'Could not start eCitizen sign-in',
@@ -100,22 +118,43 @@ function LoginForm() {
       </div>
 
       {/* ── Right panel — form ────────────────────────────────────────────── */}
-      <div className="relative flex flex-1 flex-col bg-background">
+      <div className="relative flex flex-1 flex-col bg-gradient-to-br from-background via-background to-[#14b04c]/[0.04]">
+        {/* Soft animated background blobs */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-[#14b04c]/10 blur-3xl" />
+          <div className="absolute -bottom-32 -left-16 h-80 w-80 rounded-full bg-[#e7191b]/[0.06] blur-3xl" />
+        </div>
+
         {/* Theme toggle (top-right) */}
         <div className="absolute top-4 right-4 z-10">
           <ThemeToggle />
         </div>
 
-        <div className="flex flex-1 items-center justify-center px-6 py-10">
-          <div className="w-full max-w-sm">
-            {/* Mobile-only logo (left panel hidden below lg) */}
-            <div className="flex justify-center mb-6 lg:hidden">
+        <div className="relative z-10 flex flex-1 items-center justify-center px-6 py-10">
+          <div className="w-full max-w-md">
+            {/* Mobile-only logo */}
+            <div className="flex justify-center mb-8 lg:hidden">
               <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={200} height={42} className="object-contain" />
             </div>
 
-            <div className="mb-7 text-center">
-              <h2 className="text-2xl font-bold text-foreground">Welcome back</h2>
-              <p className="mt-1 text-sm text-muted-foreground">Sign in to your eCitizen account</p>
+            {/* Verified badge */}
+            <div className="flex justify-center mb-5">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[#14b04c]/25 bg-[#14b04c]/10 px-3.5 py-1.5">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#14b04c] opacity-60" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[#14b04c]" />
+                </span>
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-[#14b04c]">
+                  Government-verified sign-in
+                </span>
+              </div>
+            </div>
+
+            <div className="mb-8 text-center">
+              <h2 className="text-3xl font-extrabold tracking-tight text-foreground">Welcome back</h2>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                Use your eCitizen account to access the<br className="hidden sm:block" /> Service Command Centre.
+              </p>
             </div>
 
             <OfflineBanner />
@@ -132,9 +171,12 @@ function LoginForm() {
               type="button"
               onClick={handleSsoClick}
               disabled={ssoLoading}
-              className="w-full flex items-center justify-center gap-3 rounded-lg px-4 py-3.5 text-sm font-semibold text-white disabled:opacity-70 disabled:cursor-not-allowed transition-colors shadow-sm"
+              className="group relative w-full flex items-center justify-center gap-3 rounded-xl px-4 py-4 text-base font-semibold text-white disabled:cursor-not-allowed transition-all duration-200 hover:-translate-y-0.5 disabled:translate-y-0 shadow-[0_8px_24px_-8px_rgba(20,176,76,0.5)] hover:shadow-[0_12px_28px_-8px_rgba(20,176,76,0.65)] disabled:shadow-none disabled:opacity-90"
               style={{ background: '#14b04c' }}
             >
+              {/* Subtle gloss */}
+              <span className="pointer-events-none absolute inset-0 rounded-xl bg-gradient-to-b from-white/15 to-transparent" />
+
               {ssoLoading ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
@@ -142,29 +184,48 @@ function LoginForm() {
                 </>
               ) : (
                 <>
-                  <Image
-                    src="/ecitizen-logo.png"
-                    alt=""
-                    width={22}
-                    height={22}
-                    className="h-5 w-5 object-contain bg-white rounded-sm p-0.5"
-                  />
+                  <span className="flex items-center justify-center h-7 w-7 rounded-md bg-white shadow-sm">
+                    <Image
+                      src="/ecitizen-logo.png"
+                      alt=""
+                      width={24}
+                      height={24}
+                      className="h-5 w-auto object-contain"
+                    />
+                  </span>
                   Sign in with eCitizen
                 </>
               )}
             </button>
 
-            <p className="mt-5 text-center text-xs text-muted-foreground leading-relaxed">
-              You will be redirected to <span className="font-medium text-foreground">accounts.ecitizen.go.ke</span> to verify your identity, then brought back here.
-            </p>
+            {/* Step preview — what happens next */}
+            <div className="mt-6 rounded-xl border border-border bg-card/60 backdrop-blur-sm p-4">
+              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">
+                What happens next
+              </p>
+              <ol className="space-y-2.5 text-xs text-foreground">
+                {[
+                  'You are redirected to accounts.ecitizen.go.ke',
+                  'You authorise the Command Centre to read your basic profile',
+                  'You return here, signed in and ready to raise tickets',
+                ].map((step, i) => (
+                  <li key={i} className="flex items-start gap-2.5">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#14b04c]/15 text-[10px] font-bold text-[#14b04c]">
+                      {i + 1}
+                    </span>
+                    <span className="leading-relaxed">{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
 
-            <p className="mt-4 text-center text-xs text-muted-foreground">
+            <p className="mt-5 text-center text-xs text-muted-foreground">
               Don&apos;t have an eCitizen account?{' '}
               <a
                 href="https://accounts.ecitizen.go.ke/en/sign-up"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-medium hover:underline"
+                className="font-semibold hover:underline"
                 style={{ color: '#14b04c' }}
               >
                 Create one at eCitizen
@@ -173,8 +234,8 @@ function LoginForm() {
           </div>
         </div>
 
-        <p className="py-4 text-center text-xs text-muted-foreground border-t border-border" suppressHydrationWarning>
-          &copy; {new Date().getFullYear()} Republic of Kenya. All rights reserved.
+        <p className="relative z-10 py-4 text-center text-xs text-muted-foreground border-t border-border/60" suppressHydrationWarning>
+          &copy; {new Date().getFullYear()} Republic of Kenya · eCitizen Service Command Centre
         </p>
 
         {/* Bottom-right eCitizen brand mark (desktop only — mobile already shows it inline above the form) */}

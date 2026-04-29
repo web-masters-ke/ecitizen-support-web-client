@@ -31,14 +31,14 @@ async function sha256(input: string): Promise<ArrayBuffer> {
 // ── Public API ───────────────────────────────────────────────────────────────
 
 /**
- * Kick off the eCitizen sign-in flow. Generates a code_verifier + state,
- * stores them in sessionStorage, asks our backend for the authorize URL with
- * the matching code_challenge, then navigates the browser there.
+ * Pre-build the eCitizen authorize URL and stash the PKCE state in
+ * sessionStorage. Call this on page mount so the user's click is an
+ * instant navigation with zero network wait.
  *
- * @param returnTo  Optional path to send the user to after successful sign-in
- *                  (e.g. /dashboard). Default: /dashboard.
+ * Returns the URL the browser should navigate to when the user clicks
+ * Sign in with eCitizen.
  */
-export async function signInWithECitizen(returnTo: string = '/dashboard'): Promise<void> {
+export async function prepareECitizenSignIn(returnTo: string = '/dashboard'): Promise<string> {
   const codeVerifier = randomString(64)
   const codeChallenge = base64url(await sha256(codeVerifier))
   const state = randomString(32)
@@ -47,16 +47,25 @@ export async function signInWithECitizen(returnTo: string = '/dashboard'): Promi
   sessionStorage.setItem(SS_STATE, state)
   sessionStorage.setItem(SS_RETURN_TO, returnTo)
 
-  // Ask backend to build the authorize URL — keeps client_id off the browser env
   const params = new URLSearchParams({ state, codeChallenge })
   const res = await fetch(`${API_BASE}/auth/ecitizen/authorize-url?${params}`)
-  if (!res.ok) {
-    throw new Error('Could not start eCitizen sign-in')
-  }
+  if (!res.ok) throw new Error('Could not start eCitizen sign-in')
   const data = await res.json()
   const url: string = data?.data?.url ?? data?.url
   if (!url) throw new Error('No authorize URL returned')
+  return url
+}
 
+/**
+ * Kick off the eCitizen sign-in flow. Convenience wrapper around
+ * prepareECitizenSignIn that immediately navigates. Used when no
+ * URL was prefetched.
+ *
+ * @param returnTo  Optional path to send the user to after successful sign-in
+ *                  (e.g. /dashboard). Default: /dashboard.
+ */
+export async function signInWithECitizen(returnTo: string = '/dashboard'): Promise<void> {
+  const url = await prepareECitizenSignIn(returnTo)
   window.location.assign(url)
 }
 
