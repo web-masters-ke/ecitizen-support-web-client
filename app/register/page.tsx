@@ -144,16 +144,15 @@ export default function RegisterPage() {
         </div>
 
         <div className="relative z-10 flex flex-col justify-center items-start px-12 py-20 text-white h-full">
-          <div className="rounded-xl bg-white px-6 py-3 shadow-xl mb-6 self-start">
-            <Image
-              src="/ecitizen-logo.png"
-              alt="eCitizen Kenya"
-              width={180}
-              height={38}
-              className="h-9 w-auto object-contain"
-            />
-          </div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50 mb-2">
+          <Image
+            src="/kenya-coat-of-arms.svg"
+            alt="Kenya Coat of Arms"
+            width={100}
+            height={100}
+            className="object-contain mb-6 drop-shadow-2xl"
+            priority
+          />
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60 mb-2">
             Republic of Kenya
           </p>
           <h1 className="text-3xl font-extrabold leading-tight mb-4 drop-shadow-lg">
@@ -186,17 +185,19 @@ export default function RegisterPage() {
       </div>
 
       {/* ── Right panel — form ────────────────────────────────────────────── */}
-      <div className="flex flex-1 flex-col bg-background overflow-y-auto">
-        {/* Top bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
-          <Link href="/">
-            <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={120} height={25} className="object-contain" />
-          </Link>
+      <div className="relative flex flex-1 flex-col bg-background overflow-y-auto">
+        {/* Theme toggle (top-right) */}
+        <div className="absolute top-4 right-4 z-10">
           <ThemeToggle />
         </div>
 
         <div className="flex flex-1 items-center justify-center px-6 py-10">
           <div className="w-full max-w-lg">
+            {/* Mobile-only logo */}
+            <div className="flex justify-center mb-6 lg:hidden">
+              <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={200} height={42} className="object-contain" />
+            </div>
+
             <div className="mb-7 text-center">
               <h2 className="text-2xl font-bold text-foreground">Create Your Account</h2>
               <p className="mt-1 text-sm text-muted-foreground">Submit and track government service requests</p>
@@ -368,6 +369,17 @@ export default function RegisterPage() {
         <p className="py-4 text-center text-xs text-muted-foreground border-t border-border shrink-0" suppressHydrationWarning>
           &copy; {new Date().getFullYear()} Republic of Kenya. All rights reserved.
         </p>
+
+        {/* Bottom-right eCitizen brand mark (desktop only) */}
+        <div className="absolute bottom-12 right-6 hidden lg:block">
+          <Image
+            src="/ecitizen-logo.png"
+            alt="eCitizen Kenya"
+            width={140}
+            height={30}
+            className="h-7 w-auto object-contain opacity-90"
+          />
+        </div>
       </div>
     </div>
   )

@@ -68,16 +68,15 @@ function LoginForm() {
 
         {/* Branding content */}
         <div className="relative z-10 flex flex-col justify-center items-start px-14 py-20 text-white h-full">
-          <div className="rounded-xl bg-white px-6 py-3 shadow-xl mb-6 self-start">
-            <Image
-              src="/ecitizen-logo.png"
-              alt="eCitizen Kenya"
-              width={180}
-              height={38}
-              className="h-9 w-auto object-contain"
-            />
-          </div>
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/50 mb-2">
+          <Image
+            src="/kenya-coat-of-arms.svg"
+            alt="Kenya Coat of Arms"
+            width={110}
+            height={110}
+            className="object-contain mb-6 drop-shadow-2xl"
+            priority
+          />
+          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60 mb-2">
             Republic of Kenya
           </p>
           <h1 className="text-4xl font-extrabold leading-tight mb-4 drop-shadow-lg">
@@ -109,27 +108,19 @@ function LoginForm() {
       </div>
 
       {/* ── Right panel — form ────────────────────────────────────────────── */}
-      <div className="flex flex-1 flex-col bg-background">
-        {/* Top bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border">
-          <Link href="/">
-            <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={120} height={25} className="object-contain" />
-          </Link>
+      <div className="relative flex flex-1 flex-col bg-background">
+        {/* Theme toggle (top-right) */}
+        <div className="absolute top-4 right-4 z-10">
           <ThemeToggle />
         </div>
 
         <div className="flex flex-1 items-center justify-center px-6 py-10">
           <div className="w-full max-w-sm">
-            {/* eCitizen logo */}
-            <div className="flex justify-center mb-6">
-              <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={220} height={46} className="object-contain" />
+            {/* Mobile-only logo (left panel hidden below lg) */}
+            <div className="flex justify-center mb-6 lg:hidden">
+              <Image src="/ecitizen-logo.png" alt="eCitizen Kenya" width={200} height={42} className="object-contain" />
             </div>
-            {/* Kenya flag stripe */}
-            <div className="flex h-0.5 w-full mb-7 rounded-full overflow-hidden">
-              <div className="flex-1 bg-black" />
-              <div className="flex-1 bg-[#e7191b]" />
-              <div className="flex-1 bg-[#14b04c]" />
-            </div>
+
             <div className="mb-7 text-center">
               <h2 className="text-2xl font-bold text-foreground">Welcome back</h2>
               <p className="mt-1 text-sm text-muted-foreground">Sign in to your eCitizen account</p>
@@ -221,6 +212,17 @@ function LoginForm() {
         <p className="py-4 text-center text-xs text-muted-foreground border-t border-border" suppressHydrationWarning>
           &copy; {new Date().getFullYear()} Republic of Kenya. All rights reserved.
         </p>
+
+        {/* Bottom-right eCitizen brand mark (desktop only — mobile already shows it inline above the form) */}
+        <div className="absolute bottom-12 right-6 hidden lg:block">
+          <Image
+            src="/ecitizen-logo.png"
+            alt="eCitizen Kenya"
+            width={140}
+            height={30}
+            className="h-7 w-auto object-contain opacity-90"
+          />
+        </div>
       </div>
     </div>
   )
