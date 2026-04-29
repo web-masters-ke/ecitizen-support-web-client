@@ -108,7 +108,8 @@ function LoginForm() {
                   <p className="text-2xl font-extrabold text-white">{value}</p>
                   <p className="text-xs text-white/55 mt-0.5">{label}</p>
                 </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
 
