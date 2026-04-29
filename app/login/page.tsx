@@ -7,6 +7,7 @@ import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { OfflineBanner } from '@/components/ui/OfflineBanner'
+import { signInWithECitizen } from '@/lib/auth/ecitizen'
 
 function LoginForm() {
   const { login } = useAuth()
@@ -134,6 +135,44 @@ function LoginForm() {
                 <span>{error}</span>
               </div>
             )}
+
+            {/* Sign in with eCitizen — primary path */}
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  setError('')
+                  await signInWithECitizen(redirectTo)
+                } catch (e) {
+                  setError(
+                    e instanceof Error
+                      ? e.message
+                      : 'Could not start eCitizen sign-in',
+                  )
+                }
+              }}
+              className="mb-5 w-full flex items-center justify-center gap-2 rounded-lg border border-border bg-card hover:bg-muted px-4 py-3 text-sm font-semibold text-foreground transition-colors"
+            >
+              <Image
+                src="/ecitizen-logo.png"
+                alt=""
+                width={20}
+                height={20}
+                className="h-5 w-5 object-contain"
+              />
+              Sign in with eCitizen
+            </button>
+
+            <div className="relative mb-5">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  or sign in with email
+                </span>
+              </div>
+            </div>
 
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
