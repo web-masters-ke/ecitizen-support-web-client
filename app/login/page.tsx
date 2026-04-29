@@ -76,37 +76,38 @@ function LoginForm() {
           <div className="flex-1 bg-[#006600]" />
         </div>
 
-        {/* Branding content */}
-        <div className="relative z-10 flex flex-col justify-center items-start px-14 py-20 text-white h-full">
-          <Image
-            src="/kenya-coat-of-arms.svg"
-            alt="Kenya Coat of Arms"
-            width={110}
-            height={110}
-            className="object-contain mb-6 drop-shadow-2xl"
-            priority
-          />
-          <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60 mb-2">
-            Republic of Kenya
-          </p>
-          <h1 className="text-4xl font-extrabold leading-tight mb-4 drop-shadow-lg">
-            eCitizen<br />Command Centre
-          </h1>
-          <p className="text-base text-white/70 max-w-xs leading-relaxed mb-10">
-            Your portal to submit, track, and resolve government service requests, fast.
-          </p>
+        {/* Branding content — horizontally + vertically centered */}
+        <div className="absolute inset-0 z-10 flex items-center justify-center px-14 text-white">
+          <div className="max-w-md flex flex-col items-center text-center">
+            <Image
+              src="/kenya-coat-of-arms.svg"
+              alt="Kenya Coat of Arms"
+              width={120}
+              height={120}
+              className="object-contain mb-6 drop-shadow-2xl"
+              priority
+            />
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60 mb-2">
+              Republic of Kenya
+            </p>
+            <h1 className="text-4xl font-extrabold leading-tight mb-4 drop-shadow-lg">
+              eCitizen<br />Command Centre
+            </h1>
+            <p className="text-base text-white/75 max-w-xs leading-relaxed mb-10">
+              Your portal to submit, track, and resolve government service requests, fast.
+            </p>
 
-          {/* Stats row */}
-          <div className="flex gap-8">
-            {[
-              { value: '47', label: 'Counties' },
-              { value: '200+', label: 'Services' },
-              { value: '24/7', label: 'Support' },
-            ].map(({ value, label }) => (
-              <div key={label}>
-                <p className="text-2xl font-extrabold text-white">{value}</p>
-                <p className="text-xs text-white/55 mt-0.5">{label}</p>
-              </div>
+            {/* Stats row */}
+            <div className="flex gap-8">
+              {[
+                { value: '47', label: 'Counties' },
+                { value: '200+', label: 'Services' },
+                { value: '24/7', label: 'Support' },
+              ].map(({ value, label }) => (
+                <div key={label} className="text-center">
+                  <p className="text-2xl font-extrabold text-white">{value}</p>
+                  <p className="text-xs text-white/55 mt-0.5">{label}</p>
+                </div>
             ))}
           </div>
         </div>
@@ -239,13 +240,13 @@ function LoginForm() {
         </p>
 
         {/* Bottom-right eCitizen brand mark (desktop only — mobile already shows it inline above the form) */}
-        <div className="absolute bottom-12 right-6 hidden lg:block">
+        <div className="absolute bottom-20 right-8 hidden lg:block">
           <Image
             src="/ecitizen-logo.png"
             alt="eCitizen Kenya"
-            width={140}
-            height={30}
-            className="h-7 w-auto object-contain opacity-90"
+            width={180}
+            height={38}
+            className="h-9 w-auto object-contain opacity-95"
           />
         </div>
       </div>
