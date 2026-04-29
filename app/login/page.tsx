@@ -1,45 +1,36 @@
 'use client'
 import { Suspense, useState } from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useSearchParams } from 'next/navigation'
+import { Loader2, AlertCircle } from 'lucide-react'
 import { ThemeToggle } from '@/components/ui/ThemeToggle'
 import { OfflineBanner } from '@/components/ui/OfflineBanner'
 import { signInWithECitizen } from '@/lib/auth/ecitizen'
 
 function LoginForm() {
-  const { login } = useAuth()
-  const router = useRouter()
   const searchParams = useSearchParams()
   const redirectTo = searchParams.get('redirect') ?? '/dashboard'
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPassword, setShowPassword] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [ssoLoading, setSsoLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSsoClick = async () => {
+    if (ssoLoading) return // guard against double-click while we're already redirecting
     setError('')
     if (!navigator.onLine) {
       setError('No internet connection. Please check your network and try again.')
       return
     }
-    setLoading(true)
+    setSsoLoading(true)
     try {
-      await login(email, password)
-      router.push(redirectTo)
-    } catch (err: unknown) {
-      const d = (err as { response?: { data?: { message?: string; error?: { message?: string } } } })?.response?.data
-      const msg =
-        d?.error?.message || d?.message ||
-        'Invalid email or password. Please try again.'
-      setError(msg)
-    } finally {
-      setLoading(false)
+      await signInWithECitizen(redirectTo)
+      // signInWithECitizen calls window.location.assign — page is unloading.
+      // We leave ssoLoading=true so the button stays disabled until navigation.
+    } catch (e) {
+      setError(
+        e instanceof Error ? e.message : 'Could not start eCitizen sign-in',
+      )
+      setSsoLoading(false)
     }
   }
 
@@ -136,114 +127,48 @@ function LoginForm() {
               </div>
             )}
 
-            {/* Sign in with eCitizen — primary path */}
+            {/* Sign in with eCitizen — the only path */}
             <button
               type="button"
-              onClick={async () => {
-                try {
-                  setError('')
-                  await signInWithECitizen(redirectTo)
-                } catch (e) {
-                  setError(
-                    e instanceof Error
-                      ? e.message
-                      : 'Could not start eCitizen sign-in',
-                  )
-                }
-              }}
-              className="mb-5 w-full flex items-center justify-center gap-2 rounded-lg border border-border bg-card hover:bg-muted px-4 py-3 text-sm font-semibold text-foreground transition-colors"
+              onClick={handleSsoClick}
+              disabled={ssoLoading}
+              className="w-full flex items-center justify-center gap-3 rounded-lg px-4 py-3.5 text-sm font-semibold text-white disabled:opacity-70 disabled:cursor-not-allowed transition-colors shadow-sm"
+              style={{ background: '#14b04c' }}
             >
-              <Image
-                src="/ecitizen-logo.png"
-                alt=""
-                width={20}
-                height={20}
-                className="h-5 w-5 object-contain"
-              />
-              Sign in with eCitizen
+              {ssoLoading ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Redirecting to eCitizen…
+                </>
+              ) : (
+                <>
+                  <Image
+                    src="/ecitizen-logo.png"
+                    alt=""
+                    width={22}
+                    height={22}
+                    className="h-5 w-5 object-contain bg-white rounded-sm p-0.5"
+                  />
+                  Sign in with eCitizen
+                </>
+              )}
             </button>
 
-            <div className="relative mb-5">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  or sign in with email
-                </span>
-              </div>
-            </div>
+            <p className="mt-5 text-center text-xs text-muted-foreground leading-relaxed">
+              You will be redirected to <span className="font-medium text-foreground">accounts.ecitizen.go.ke</span> to verify your identity, then brought back here.
+            </p>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-1.5">
-                  Email Address
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="your@email.com"
-                  className="flex h-11 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                />
-              </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-foreground mb-1.5">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    id="password"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="current-password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter your password"
-                    className="flex h-11 w-full rounded-lg border border-input bg-background px-3 py-2 pr-10 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                <div className="flex justify-end mt-1.5">
-                  <Link href="/forgot-password" className="text-xs hover:underline" style={{ color: '#14b04c' }}>
-                    Forgot password?
-                  </Link>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-                style={{ background: '#14b04c' }}
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              Don&apos;t have an eCitizen account?{' '}
+              <a
+                href="https://accounts.ecitizen.go.ke/en/sign-up"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium hover:underline"
+                style={{ color: '#14b04c' }}
               >
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Signing in…
-                  </>
-                ) : (
-                  'Sign In'
-                )}
-              </button>
-            </form>
-
-            <p className="mt-6 text-center text-sm text-muted-foreground">
-              Don&apos;t have an account?{' '}
-              <Link href="/register" className="font-medium text-primary hover:underline">
-                Register here
-              </Link>
+                Create one at eCitizen
+              </a>
             </p>
           </div>
         </div>

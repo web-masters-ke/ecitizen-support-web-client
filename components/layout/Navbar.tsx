@@ -200,11 +200,8 @@ export function Navbar() {
                 </>
               ) : (
                 <div className="hidden sm:flex items-center gap-2">
-                  <Button variant="ghost" size="sm" asChild>
-                    <Link href="/login">Login</Link>
-                  </Button>
                   <Button size="sm" asChild>
-                    <Link href="/register">Register</Link>
+                    <Link href="/login">Sign in with eCitizen</Link>
                   </Button>
                 </div>
               )}
@@ -285,12 +282,9 @@ export function Navbar() {
             {/* Auth / user actions */}
             <div className="px-4 pb-6 space-y-1 border-t border-border pt-3 mt-1">
               {!isAuthenticated ? (
-                <div className="grid grid-cols-2 gap-3 pt-1">
-                  <Button variant="ghost" size="sm" className="h-12 text-base rounded-2xl" asChild>
-                    <Link href="/login" onClick={() => setMobileOpen(false)}>Login</Link>
-                  </Button>
-                  <Button size="sm" className="h-12 text-base rounded-2xl" asChild>
-                    <Link href="/register" onClick={() => setMobileOpen(false)}>Register</Link>
+                <div className="pt-1">
+                  <Button size="sm" className="w-full h-12 text-base rounded-2xl" asChild>
+                    <Link href="/login" onClick={() => setMobileOpen(false)}>Sign in with eCitizen</Link>
                   </Button>
                 </div>
               ) : (

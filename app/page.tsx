@@ -31,9 +31,9 @@ const steps = [
   {
     number: '01',
     icon: UserPlus,
-    title: 'Create Your Account',
+    title: 'Sign in with eCitizen',
     description:
-      'Register in under 2 minutes using your email address and National ID. Your account gives you access to the full Command Centre.',
+      'Sign in with your existing eCitizen account in seconds. No new account needed. Your verified eCitizen identity gives you immediate access to the full Command Centre.',
   },
   {
     number: '02',
@@ -162,11 +162,11 @@ export default function HomePage() {
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/register"
+              href="/login"
               className="inline-flex items-center gap-2 rounded-xl bg-white text-[#1a6b3a] px-8 py-3.5 text-base font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
             >
               <UserPlus className="h-5 w-5" />
-              Submit a Request
+              Sign in with eCitizen
             </Link>
             <Link
               href="/login"
@@ -478,16 +478,16 @@ export default function HomePage() {
             Ready to Raise Your Request?
           </h2>
           <p className="text-background/70 dark:text-muted-foreground text-lg mb-8 max-w-xl mx-auto">
-            Create your free Command Centre account and get your government service issue
-            resolved by a dedicated support officer, within 48 hours.
+            Sign in with your eCitizen account and get your government service issue
+            resolved by a dedicated support officer, within 48 hours. No new account needed.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              href="/register"
+              href="/login"
               className="inline-flex items-center gap-2 rounded-xl bg-primary text-primary-foreground px-10 py-4 text-base font-semibold shadow-lg hover:opacity-90 hover:-translate-y-0.5 transition-all duration-200"
             >
               <UserPlus className="h-5 w-5" />
-              Create Free Account
+              Sign in with eCitizen
             </Link>
             <Link
               href="/login"
