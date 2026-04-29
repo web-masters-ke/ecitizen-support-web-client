@@ -28,8 +28,14 @@ const AUDIO_CONSTRAINTS: MediaTrackConstraints = {
   channelCount: 1,
 };
 
-const XIRSYS_USERNAME = process.env.NEXT_PUBLIC_XIRSYS_USERNAME ?? '';
-const XIRSYS_CREDENTIAL = process.env.NEXT_PUBLIC_XIRSYS_CREDENTIAL ?? '';
+// Xirsys creds — env preferred, but with hardcoded fallback so calls work
+// even when NEXT_PUBLIC_ vars weren't injected at build time.
+// These creds rotate ~yearly via Xirsys dashboard; update both .env.example
+// and these fallbacks together.
+const XIRSYS_USERNAME = process.env.NEXT_PUBLIC_XIRSYS_USERNAME
+  || 'nLwh8A66HieRxOQkp7d2jgUZbWlo91O45cGV4vCSzZ467LS7NYPL1XnLFe83yzXMAAAAAGnqX1B3YXNhYWNoYXQ=';
+const XIRSYS_CREDENTIAL = process.env.NEXT_PUBLIC_XIRSYS_CREDENTIAL
+  || 'f452fc82-3f3e-11f1-8ef6-0242ac140004';
 
 const ICE_SERVERS: RTCIceServer[] = [
   // Google STUN (free, always-on fallback)
