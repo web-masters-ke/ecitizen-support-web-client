@@ -28,21 +28,33 @@ const AUDIO_CONSTRAINTS: MediaTrackConstraints = {
   channelCount: 1,
 };
 
-// Xirsys creds — env preferred, but with hardcoded fallback so calls work
-// even when NEXT_PUBLIC_ vars weren't injected at build time.
-// These creds rotate ~yearly via Xirsys dashboard; update both .env.example
-// and these fallbacks together.
+// TURN creds — env preferred, with hardcoded fallback so calls work even when
+// NEXT_PUBLIC_ vars weren't injected at build time. Update both .env.example
+// and these fallbacks together when rotating.
 const XIRSYS_USERNAME = process.env.NEXT_PUBLIC_XIRSYS_USERNAME
   || 'nLwh8A66HieRxOQkp7d2jgUZbWlo91O45cGV4vCSzZ467LS7NYPL1XnLFe83yzXMAAAAAGnqX1B3YXNhYWNoYXQ=';
 const XIRSYS_CREDENTIAL = process.env.NEXT_PUBLIC_XIRSYS_CREDENTIAL
   || 'f452fc82-3f3e-11f1-8ef6-0242ac140004';
+const EXPRESS_TURN_USERNAME = process.env.NEXT_PUBLIC_EXPRESS_TURN_USERNAME
+  || '000000002092881791';
+const EXPRESS_TURN_CREDENTIAL = process.env.NEXT_PUBLIC_EXPRESS_TURN_CREDENTIAL
+  || '42y+MSLrgrTEI6/1NajKnh9KlY8=';
 
 const ICE_SERVERS: RTCIceServer[] = [
   // Google STUN (free, always-on fallback)
   { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
+  // ExpressTURN — primary (free tier 1TB/mo, GeoDNS auto-routing)
+  {
+    username: EXPRESS_TURN_USERNAME,
+    credential: EXPRESS_TURN_CREDENTIAL,
+    urls: [
+      'turn:free.expressturn.com:3478?transport=udp',
+      'turn:free.expressturn.com:3478?transport=tcp',
+    ],
+  },
   // Xirsys STUN
   { urls: 'stun:bn-turn1.xirsys.com' },
-  // Xirsys TURN — all transports
+  // Xirsys TURN — secondary, all transports
   {
     username: XIRSYS_USERNAME,
     credential: XIRSYS_CREDENTIAL,
