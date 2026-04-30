@@ -40,21 +40,17 @@ const EXPRESS_TURN_USERNAME = process.env.NEXT_PUBLIC_EXPRESS_TURN_USERNAME
 const EXPRESS_TURN_CREDENTIAL = process.env.NEXT_PUBLIC_EXPRESS_TURN_CREDENTIAL
   || '42y+MSLrgrTEI6/1NajKnh9KlY8=';
 
+// NOTE: ExpressTURN entry temporarily removed — caused asymmetric call
+// failure (one direction connected, the other hung at "waiting for answer"
+// even though both peers were on the same network). Investigate before
+// re-adding. EXPRESS_TURN_* env vars and constants are kept so the entry
+// can be reintroduced quickly once the root cause is identified.
 const ICE_SERVERS: RTCIceServer[] = [
   // Google STUN (free, always-on fallback)
   { urls: ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302'] },
-  // ExpressTURN — primary (free tier 1TB/mo, GeoDNS auto-routing)
-  {
-    username: EXPRESS_TURN_USERNAME,
-    credential: EXPRESS_TURN_CREDENTIAL,
-    urls: [
-      'turn:free.expressturn.com:3478?transport=udp',
-      'turn:free.expressturn.com:3478?transport=tcp',
-    ],
-  },
   // Xirsys STUN
   { urls: 'stun:bn-turn1.xirsys.com' },
-  // Xirsys TURN — secondary, all transports
+  // Xirsys TURN — all transports
   {
     username: XIRSYS_USERNAME,
     credential: XIRSYS_CREDENTIAL,
