@@ -76,8 +76,10 @@ function CallbackInner() {
         const target = pending.returnTo
         clearPendingFlow()
         setStatus('success')
-        // Small delay so the success state is visible
-        setTimeout(() => router.replace(target), 600)
+        // Hard navigation (not router.replace) so AuthProvider remounts and
+        // picks up the freshly-stored accessToken — soft nav leaves the
+        // context's user state stale and bounces user back to /login.
+        setTimeout(() => window.location.assign(target), 600)
       })
       .catch((err: Error) => {
         setStatus('error')
