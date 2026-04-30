@@ -6,6 +6,10 @@
 const SS_CODE_VERIFIER = 'ecitizen.code_verifier'
 const SS_STATE = 'ecitizen.state'
 const SS_RETURN_TO = 'ecitizen.return_to'
+const SS_CACHED_URL = 'ecitizen.cached_url'
+const SS_CACHED_AT = 'ecitizen.cached_at'
+// eCitizen state params expire in 5–10 min; we refresh a minute early to be safe
+const CACHE_TTL_MS = 4 * 60 * 1000
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000/api/v1'
 
@@ -39,6 +43,17 @@ async function sha256(input: string): Promise<ArrayBuffer> {
  * Sign in with eCitizen.
  */
 export async function prepareECitizenSignIn(returnTo: string = '/dashboard'): Promise<string> {
+  // If the user pressed Back from eCitizen and the PKCE state + cached URL are
+  // still valid, return instantly — no network round-trip needed.
+  const cachedUrl = sessionStorage.getItem(SS_CACHED_URL)
+  const cachedAt = Number(sessionStorage.getItem(SS_CACHED_AT) ?? 0)
+  const stateStillValid =
+    sessionStorage.getItem(SS_CODE_VERIFIER) &&
+    sessionStorage.getItem(SS_STATE)
+  if (cachedUrl && stateStillValid && Date.now() - cachedAt < CACHE_TTL_MS) {
+    return cachedUrl
+  }
+
   const codeVerifier = randomString(64)
   const codeChallenge = base64url(await sha256(codeVerifier))
   const state = randomString(32)
@@ -53,6 +68,10 @@ export async function prepareECitizenSignIn(returnTo: string = '/dashboard'): Pr
   const data = await res.json()
   const url: string = data?.data?.url ?? data?.url
   if (!url) throw new Error('No authorize URL returned')
+
+  sessionStorage.setItem(SS_CACHED_URL, url)
+  sessionStorage.setItem(SS_CACHED_AT, String(Date.now()))
+
   return url
 }
 
@@ -89,6 +108,8 @@ export function clearPendingFlow(): void {
   sessionStorage.removeItem(SS_CODE_VERIFIER)
   sessionStorage.removeItem(SS_STATE)
   sessionStorage.removeItem(SS_RETURN_TO)
+  sessionStorage.removeItem(SS_CACHED_URL)
+  sessionStorage.removeItem(SS_CACHED_AT)
 }
 
 /** Exchange the code with our backend. Returns access + refresh tokens + user. */
