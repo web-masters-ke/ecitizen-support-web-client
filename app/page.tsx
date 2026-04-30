@@ -82,9 +82,9 @@ const faqs = [
       'The eCitizen Command Centre is the Government of Kenya\'s official support and oversight platform for eCitizen digital services. When you encounter a problem with an eCitizen service (a delayed passport, a failed payment, a registration issue) you raise it here and a dedicated government support officer resolves it for you.',
   },
   {
-    question: 'How do I create an account?',
+    question: 'Do I need to create a separate account?',
     answer:
-      "Click 'Submit a Request' above and fill in your name, email address, and account type. You'll receive a confirmation email. Registration takes under 2 minutes and is completely free.",
+      'No. The Command Centre uses your existing eCitizen account. Click "Sign in with eCitizen" and you will be redirected to accounts.ecitizen.go.ke to authenticate. If you do not yet have an eCitizen account, create one at accounts.ecitizen.go.ke and then return here to sign in.',
   },
   {
     question: 'Who handles my support request?',
@@ -338,20 +338,18 @@ export default function HomePage() {
                 ))}
               </div>
               <div className="mt-8 flex flex-col sm:flex-row items-center lg:items-start gap-4">
-                <Link
-                  href="/register"
-                  className="inline-flex items-center gap-2 bg-white text-slate-900 rounded-xl px-6 py-3 text-sm font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200"
+                <span
+                  className="inline-flex items-center gap-2 bg-white/20 text-white/60 rounded-xl px-6 py-3 text-sm font-semibold cursor-default select-none"
                 >
                   <Download className="h-4 w-4" />
                   Google Play Store
-                </Link>
-                <Link
-                  href="/register"
-                  className="inline-flex items-center gap-2 border-2 border-white/40 bg-white/10 rounded-xl px-6 py-3 text-sm font-semibold backdrop-blur-sm hover:bg-white/20 transition-all duration-200"
+                </span>
+                <span
+                  className="inline-flex items-center gap-2 border-2 border-white/20 bg-white/5 rounded-xl px-6 py-3 text-sm font-semibold text-white/60 cursor-default select-none"
                 >
                   <Smartphone className="h-4 w-4" />
                   Apple App Store
-                </Link>
+                </span>
               </div>
             </div>
 

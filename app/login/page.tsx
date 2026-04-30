@@ -221,18 +221,6 @@ function LoginForm() {
               </ol>
             </div>
 
-            <p className="mt-5 text-center text-xs text-muted-foreground">
-              Don&apos;t have an eCitizen account?{' '}
-              <a
-                href="https://accounts.ecitizen.go.ke/en/sign-up"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-semibold hover:underline"
-                style={{ color: '#14b04c' }}
-              >
-                Create one at eCitizen
-              </a>
-            </p>
           </div>
         </div>
 
