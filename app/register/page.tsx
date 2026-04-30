@@ -159,7 +159,7 @@ export default function RegisterPage() {
             Join eCitizen<br />Command Centre
           </h1>
           <p className="text-sm text-white/65 max-w-[240px] leading-relaxed mb-8">
-            Access 200+ government services from anywhere. Fast, transparent, and secure.
+            Access 22,000+ government services from anywhere. Fast, transparent, and secure.
           </p>
 
           {/* Steps */}

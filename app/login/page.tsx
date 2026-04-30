@@ -101,7 +101,7 @@ function LoginForm() {
             <div className="flex gap-8">
               {[
                 { value: '47', label: 'Counties' },
-                { value: '200+', label: 'Services' },
+                { value: '22K+', label: 'Services' },
                 { value: '24/7', label: 'Support' },
               ].map(({ value, label }) => (
                 <div key={label} className="text-center">
